@@ -11,6 +11,12 @@ param subnetId string
 @description('Specifies the name of the private endpoint to the blob storage account.')
 param blobStorageAccountPrivateEndpointName string
 
+@description('Specifies the name of the private endpoint to the queue storage account.')
+param queueStorageAccountPrivateEndpointName string
+
+@description('Specifies the name of the private endpoint to the table storage account.')
+param tableStorageAccountPrivateEndpointName string
+
 @description('Specifies the name of the private endpoint to the file storage account.')
 param fileStorageAccountPrivateEndpointName string
 
@@ -59,6 +65,18 @@ resource blobPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   tags: tags
 }
 
+resource queuePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.queue.${environment().suffixes.storage}'
+  location: 'global'
+  tags: tags
+}
+
+resource tablePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.table.${environment().suffixes.storage}'
+  location: 'global'
+  tags: tags
+}
+
 resource filePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   name: 'privatelink.file.${environment().suffixes.storage}'
   location: 'global'
@@ -77,7 +95,6 @@ resource openAiPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   tags: tags
 }
 
-
 resource cosmosDbPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   name:  'privatelink.${toLower(environment().name) == 'azureusgovernment' ? 'documents.azure.us' : 'documents.azure.com'}'
   location: 'global'
@@ -87,6 +104,30 @@ resource cosmosDbPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' =
 // Virtual Network Links
 resource blobPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
   parent: blobPrivateDnsZone
+  name: 'link_to_${toLower(virtualNetworkName)}'
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: vnet.id
+    }
+  }
+}
+
+resource queuePrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: queuePrivateDnsZone
+  name: 'link_to_${toLower(virtualNetworkName)}'
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: vnet.id
+    }
+  }
+}
+
+resource tablePrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: tablePrivateDnsZone
   name: 'link_to_${toLower(virtualNetworkName)}'
   location: 'global'
   properties: {
@@ -177,6 +218,80 @@ resource blobStorageAccountPrivateDnsZoneGroupName 'Microsoft.Network/privateEnd
         name: 'dnsConfig'
         properties: {
           privateDnsZoneId: blobPrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource queueStorageAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
+  name: queueStorageAccountPrivateEndpointName
+  location: location
+  tags: tags
+  properties: {
+    privateLinkServiceConnections: [
+      {
+        name: queueStorageAccountPrivateEndpointName
+        properties: {
+          privateLinkServiceId: storageAccountId
+          groupIds: [
+            'queue'
+          ]
+        }
+      }
+    ]
+    subnet: {
+      id: subnetId
+    }
+  }
+}
+
+resource queueStorageAccountPrivateDnsZoneGroupName 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = {
+  parent: queueStorageAccountPrivateEndpoint
+  name: 'PrivateDnsZoneGroupName'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'dnsConfig'
+        properties: {
+          privateDnsZoneId: queuePrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource tableStorageAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
+  name: tableStorageAccountPrivateEndpointName
+  location: location
+  tags: tags
+  properties: {
+    privateLinkServiceConnections: [
+      {
+        name: tableStorageAccountPrivateEndpointName
+        properties: {
+          privateLinkServiceId: storageAccountId
+          groupIds: [
+            'table'
+          ]
+        }
+      }
+    ]
+    subnet: {
+      id: subnetId
+    }
+  }
+}
+
+resource tableStorageAccountPrivateDnsZoneGroupName 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = {
+  parent: tableStorageAccountPrivateEndpoint
+  name: 'PrivateDnsZoneGroupName'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'dnsConfig'
+        properties: {
+          privateDnsZoneId: tablePrivateDnsZone.id
         }
       }
     ]

@@ -71,6 +71,30 @@ var vnetMetrics = [for category in vnetMetricCategories: {
     days: 0
   }
 }]
+var publicIpLogCategories = [
+  'DDoSProtectionNotifications'
+  'DDoSMitigationFlowLogs'
+  'DDoSMitigationReports'
+]
+var publicIpMetricCategories = [
+  'AllMetrics'
+]
+var publicIpLogs = [for category in publicIpLogCategories: {
+  category: category
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: 0
+  }
+}]
+var publicIpMetrics = [for category in publicIpMetricCategories: {
+  category: category
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: 0
+  }
+}]
 
 // Virtual Network
 resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
@@ -156,6 +180,16 @@ resource vnetDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-0
     metrics: vnetMetrics
   }
 }
+
+resource publicIpDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [for i in range(0, natGatewayPublicIps): {
+  name: diagnosticSettingsName
+  scope: natGatewayPublicIp[i]
+  properties: {
+    workspaceId: workspaceId
+    logs: publicIpLogs
+    metrics: publicIpMetrics
+  }
+}]
 
 //********************************************
 // Outputs
