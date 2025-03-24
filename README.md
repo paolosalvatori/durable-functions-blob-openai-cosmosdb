@@ -6,5 +6,12 @@ This sample demonstrates how to build a data pipeline using [Azure Durable Funct
 2. Sends the questions to an [Azure OpenAI Service](https://learn.microsoft.com/azure/ai-services/openai/overview) chat model for processing.
 3. Stores the processed results as individual documents in an [Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/introduction) database.
 
+This repository includes:
+
+- A collection of [Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview?tabs=bicep) templates to deploy the required Azure infrastructure.
+- The Azure Functions application code written in C#.
+
+You can use the following buttons to deploy or visualize the Azure resources used by the solution:
+
 [![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaolosalvatori%2Fdurable-functions-blob-openai-cosmosdb%2Fmain%2Fbicep%2Fmain.bicep)  
 [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.svg?sanitize=true)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fpaolosalvatori%2Fdurable-functions-blob-openai-cosmosdb%2Fmain%2Fbicep%2Fmain.bicep)
