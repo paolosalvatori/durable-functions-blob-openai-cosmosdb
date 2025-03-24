@@ -1,0 +1,4071 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.34.1.11899",
+      "templateHash": "7650159816052050767"
+    }
+  },
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "defaultValue": "[substring(uniqueString(resourceGroup().id), 0, 4)]",
+      "minLength": 4,
+      "maxLength": 10,
+      "metadata": {
+        "description": "Specifies the name prefix for all the Azure resources."
+      }
+    },
+    "suffix": {
+      "type": "string",
+      "defaultValue": "[substring(uniqueString(resourceGroup().id), 0, 4)]",
+      "minLength": 4,
+      "maxLength": 10,
+      "metadata": {
+        "description": "Specifies the name suffix or all the Azure resources."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Specifies the location for all the Azure resources."
+      }
+    },
+    "hostingPlanName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the hosting plan."
+      }
+    },
+    "hostingPlanSkuTier": {
+      "type": "string",
+      "defaultValue": "ElasticPremium",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "ElasticPremium",
+        "Premium",
+        "PremiumV2",
+        "Premium0V3",
+        "PremiumV3",
+        "PremiumMV3",
+        "Isolated",
+        "IsolatedV2",
+        "WorkflowStandard",
+        "FlexConsumption"
+      ],
+      "metadata": {
+        "description": "Specifies the tier name for the hosting plan."
+      }
+    },
+    "hostingPlanSkuName": {
+      "type": "string",
+      "defaultValue": "EP1",
+      "allowedValues": [
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "EP1",
+        "EP2",
+        "EP3",
+        "P1",
+        "P2",
+        "P3",
+        "P1V2",
+        "P2V2",
+        "P3V2",
+        "P0V3",
+        "P1V3",
+        "P2V3",
+        "P3V3",
+        "P1MV3",
+        "P2MV3",
+        "P3MV3",
+        "P4MV3",
+        "P5MV3",
+        "I1",
+        "I2",
+        "I3",
+        "I1V2",
+        "I2V2",
+        "I3V2",
+        "I4V2",
+        "I5V2",
+        "I6V2",
+        "WS1",
+        "WS2",
+        "WS3",
+        "FC1"
+      ],
+      "metadata": {
+        "description": "Specifies the SKU name for the hosting plan."
+      }
+    },
+    "hostingPlanKind": {
+      "type": "string",
+      "defaultValue": "elastic",
+      "allowedValues": [
+        "app",
+        "elastic",
+        "functionapp",
+        "windows",
+        "linux"
+      ],
+      "metadata": {
+        "description": "Specifies the kind of the hosting plan."
+      }
+    },
+    "hostingPlanIsReserved": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the hosting plan is reserved."
+      }
+    },
+    "hostingPlanZoneRedundant": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Specifies whether the hosting plan is zone redundant."
+      }
+    },
+    "functionAppName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies a globally unique name for your deployed function app."
+      }
+    },
+    "functionAppKind": {
+      "type": "string",
+      "defaultValue": "functionapp,linux",
+      "allowedValues": [
+        "app",
+        "app,linux",
+        "app,linux,container",
+        "hyperV",
+        "app,container,windows",
+        "app,linux,kubernetes",
+        "app,linux,container,kubernetes",
+        "functionapp",
+        "functionapp,linux",
+        "functionapp,linux,container,kubernetes",
+        "functionapp,linux,kubernetes"
+      ],
+      "metadata": {
+        "description": "Specifies the kind of the hosting plan."
+      }
+    },
+    "functionAppRuntimeName": {
+      "type": "string",
+      "defaultValue": "dotnet-isolated",
+      "allowedValues": [
+        "dotnet",
+        "dotnet-isolated",
+        "python",
+        "java",
+        "node",
+        "powerShell",
+        "custom"
+      ],
+      "metadata": {
+        "description": "Specifies the language runtime used by the function app."
+      }
+    },
+    "functionAppRuntimeVersion": {
+      "type": "string",
+      "defaultValue": "9.0",
+      "metadata": {
+        "description": "Specifies the target language version used by the function app."
+      }
+    },
+    "functionAppPublicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Specifies whether the public network access is enabled or disabled"
+      }
+    },
+    "functionAppMaximumInstanceCount": {
+      "type": "int",
+      "defaultValue": 100,
+      "minValue": 40,
+      "maxValue": 1000,
+      "metadata": {
+        "description": "Specifies the maximum scale-out instance count limit for the app."
+      }
+    },
+    "functionAppInstanceMemoryMB": {
+      "type": "int",
+      "defaultValue": 2048,
+      "allowedValues": [
+        2048,
+        4096
+      ],
+      "metadata": {
+        "description": "Specifies the memory size of instances used by the app."
+      }
+    },
+    "extensionVersion": {
+      "type": "string",
+      "defaultValue": "~4",
+      "metadata": {
+        "description": "Specifies Azurre Functions extension verson."
+      }
+    },
+    "allowedCorsOrigins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies allowed origins for client-side CORS request on the site."
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the Azure Log Analytics resource."
+      }
+    },
+    "logAnalyticsSku": {
+      "type": "string",
+      "defaultValue": "PerNode",
+      "allowedValues": [
+        "Free",
+        "Standalone",
+        "PerNode",
+        "PerGB2018"
+      ],
+      "metadata": {
+        "description": "Specifies the service tier of the workspace: Free, Standalone, PerNode, Per-GB."
+      }
+    },
+    "logAnalyticsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 60,
+      "metadata": {
+        "description": "Specifies the workspace data retention in days. -1 means Unlimited retention for the Unlimited Sku. 730 days is the maximum allowed for all other Skus."
+      }
+    },
+    "applicationInsightsName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the Azure Application Insights resource."
+      }
+    },
+    "deployKeyVault": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies wether deploying the Azure Key Vault resource."
+      }
+    },
+    "keyVaultName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the Azure Key Vault resource."
+      }
+    },
+    "keyVaultPublicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "Specifies whether to allow public network access for Key Vault."
+      }
+    },
+    "keyVaultNetworkAclsDefaultAction": {
+      "type": "string",
+      "defaultValue": "Allow",
+      "allowedValues": [
+        "Allow",
+        "Deny"
+      ],
+      "metadata": {
+        "description": "Specifies the default action of allow or deny when no other rules match for the Azure Key Vault resource. Allowed values: Allow or Deny"
+      }
+    },
+    "keyVaultEnabledForDeployment": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the Azure Key Vault resource is enabled for deployments."
+      }
+    },
+    "keyVaultEnabledForDiskEncryption": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the Azure Key Vault resource is enabled for disk encryption."
+      }
+    },
+    "keyVaultEnabledForTemplateDeployment": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the Azure Key Vault resource is enabled for template deployment."
+      }
+    },
+    "keyVaultEnableSoftDelete": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the soft delete is enabled for this Azure Key Vault resource."
+      }
+    },
+    "keyVaultEnablePurgeProtection": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether purge protection is enabled for this Azure Key Vault resource."
+      }
+    },
+    "keyVaultEnableRbacAuthorization": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether enable the RBAC authorization for the Azure Key Vault resource."
+      }
+    },
+    "keyVaultSoftDeleteRetentionInDays": {
+      "type": "int",
+      "defaultValue": 7,
+      "metadata": {
+        "description": "Specifies the soft delete retention in days."
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name for the Azure Storage Account resource."
+      }
+    },
+    "storageAccountPublicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "Specifies whether to allow public network access for the storage account."
+      }
+    },
+    "storageAccountAccessTier": {
+      "type": "string",
+      "defaultValue": "Hot",
+      "metadata": {
+        "description": "Specifies the access tier of the Azure Storage Account resource. The default value is Hot."
+      }
+    },
+    "storageAccountAllowBlobPublicAccess": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the Azure Storage Account resource allows public access to blobs."
+      }
+    },
+    "storageAccountAllowSharedKeyAccess": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the Azure Storage Account resource allows shared key access."
+      }
+    },
+    "storageAccountAllowCrossTenantReplication": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Specifies whether the Azure Storage Account resource allows cross-tenant replication."
+      }
+    },
+    "storageAccountMinimumTlsVersion": {
+      "type": "string",
+      "defaultValue": "TLS1_2",
+      "metadata": {
+        "description": "Specifies the minimum TLS version to be permitted on requests to the Azure Storage Account resource. The default value is TLS1_2."
+      }
+    },
+    "storageAccountANetworkAclsDefaultAction": {
+      "type": "string",
+      "defaultValue": "Allow",
+      "allowedValues": [
+        "Allow",
+        "Deny"
+      ],
+      "metadata": {
+        "description": "The default action of allow or deny when no other rules match. Allowed values: Allow or Deny"
+      }
+    },
+    "storageAccountSupportsHttpsTrafficOnly": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies whether the Azure Storage Account resource should only support HTTPS traffic."
+      }
+    },
+    "storageAccountCreateContainers": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Specifies whether to create containers."
+      }
+    },
+    "storageAccountContainerNames": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies an array of containers to create."
+      }
+    },
+    "virtualNetworkResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Specifies the name of the resource group hosting the virtual network and private endpoints."
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the virtual network."
+      }
+    },
+    "virtualNetworkAddressPrefixes": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/8",
+      "metadata": {
+        "description": "Specifies the address prefixes of the virtual network."
+      }
+    },
+    "functionAppSubnetName": {
+      "type": "string",
+      "defaultValue": "FuncAppSubnet",
+      "metadata": {
+        "description": "Specifies the name of the subnet used by Azure Functions for the regional virtual network integration."
+      }
+    },
+    "functionAppSubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "Specifies the address prefix of the subnet used by Azure Functions for the regional virtual network integration."
+      }
+    },
+    "peSubnetName": {
+      "type": "string",
+      "defaultValue": "PeSubnet",
+      "metadata": {
+        "description": "Specifies the name of the subnet which contains private endpoints."
+      }
+    },
+    "peSubnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.1.0/24",
+      "metadata": {
+        "description": "Specifies the address prefix of the subnet which contains private endpoints."
+      }
+    },
+    "natGatewayName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the Azure NAT Gateway."
+      }
+    },
+    "natGatewayZones": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies a list of availability zones denoting the zone in which Nat Gateway should be deployed."
+      }
+    },
+    "natGatewayPublicIps": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Specifies the number of Public IPs to create for the Azure NAT Gateway."
+      }
+    },
+    "natGatewayIdleTimeoutMins": {
+      "type": "int",
+      "defaultValue": 30,
+      "metadata": {
+        "description": "Specifies the idle timeout in minutes for the Azure NAT Gateway."
+      }
+    },
+    "blobStorageAccountPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the private endpoint to the blob storage account."
+      }
+    },
+    "fileStorageAccountPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the private endpoint to the file storage account."
+      }
+    },
+    "keyVaultPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the private endpoint to the Key Vault."
+      }
+    },
+    "cosmosDbAccountName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the Azure Cosmos DB account."
+      }
+    },
+    "cosmosDbAccountPublicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Specifies whether the public network access is enabled or disabled"
+      }
+    },
+    "cosmosDbAccountNetworkAclBypass": {
+      "type": "string",
+      "defaultValue": "AzureServices",
+      "allowedValues": [
+        "AzureServices",
+        "None"
+      ],
+      "metadata": {
+        "description": "Indicates what services are allowed to bypass firewall checks."
+      }
+    },
+    "cosmosDbAccountDisableLocalAuth": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Specifies whether disable the local authentication via API key."
+      }
+    },
+    "cosmosDbDatabaseName": {
+      "type": "string",
+      "defaultValue": "DocumentDb",
+      "metadata": {
+        "description": "Specifies the name of the Azure Cosmos DB database."
+      }
+    },
+    "cosmosDbContainerName": {
+      "type": "string",
+      "defaultValue": "DocumentCollection",
+      "metadata": {
+        "description": "Specifies the name of the Azure Cosmos DB container."
+      }
+    },
+    "cosmosDbIpRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies the IP rules for the Azure Cosmos DB database."
+      }
+    },
+    "cosmosDbPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the private endpoint to the Azure Cosmos DB."
+      }
+    },
+    "openAiName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the Azure OpenAI resource."
+      }
+    },
+    "openAiLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Specifies the location for all the Azure resources."
+      }
+    },
+    "openAiSku": {
+      "type": "object",
+      "defaultValue": {
+        "name": "S0"
+      },
+      "metadata": {
+        "description": "Specifies the resource model definition representing SKU."
+      }
+    },
+    "openAiIdentity": {
+      "type": "object",
+      "defaultValue": {
+        "type": "SystemAssigned"
+      },
+      "metadata": {
+        "description": "Specifies the identity of the OpenAI resource."
+      }
+    },
+    "openAiCustomSubDomainName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies an optional subdomain name used for token-based authentication."
+      }
+    },
+    "openAiDisableLocalAuth": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Specifies whether disable the local authentication via API key."
+      }
+    },
+    "openAiPublicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Specifies whether or not public endpoint access is allowed for this account.."
+      }
+    },
+    "openAiDeployments": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies the OpenAI deployments to create."
+      }
+    },
+    "openAiPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the private link to the Azure OpenAI resource."
+      }
+    },
+    "chatModelDeploymentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of the Azure OpenAI chat model deployment."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Specifies the resource tags for all the resoources."
+      }
+    },
+    "userObjectId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the object id of a Microsoft Entra ID user. In general, this the object id of the system administrator who deploys the Azure resources."
+      }
+    }
+  },
+  "resources": {
+    "workspace": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "workspace",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('logAnalyticsName')), createObject('value', toLower(format('{0}-log-analytics-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('logAnalyticsName')))]",
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "sku": {
+            "value": "[parameters('logAnalyticsSku')]"
+          },
+          "retentionInDays": {
+            "value": "[parameters('logAnalyticsRetentionInDays')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "3664840741566299018"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Log Analytics workspace."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "sku": {
+              "type": "string",
+              "defaultValue": "PerNode",
+              "allowedValues": [
+                "Free",
+                "Standalone",
+                "PerNode",
+                "PerGB2018"
+              ],
+              "metadata": {
+                "description": "Specifies the service tier of the workspace: Free, Standalone, PerNode, Per-GB."
+              }
+            },
+            "retentionInDays": {
+              "type": "int",
+              "defaultValue": 60,
+              "metadata": {
+                "description": "Specifies the workspace data retention in days. -1 means Unlimited retention for the Unlimited Sku. 730 days is the maximum allowed for all other Skus."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2023-09-01",
+              "name": "[parameters('name')]",
+              "tags": "[parameters('tags')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "[parameters('sku')]"
+                },
+                "retentionInDays": "[parameters('retentionInDays')]"
+              }
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "customerId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('name')), '2023-09-01').customerId]"
+            }
+          }
+        }
+      }
+    },
+    "applicationInsights": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "applicationInsights",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('applicationInsightsName')), createObject('value', toLower(format('{0}-app-insights-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('applicationInsightsName')))]",
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "1300635046358392043"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Application Insights."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "applicationType": {
+              "type": "string",
+              "defaultValue": "web",
+              "allowedValues": [
+                "web",
+                "other"
+              ],
+              "metadata": {
+                "description": "Specifies the type of application being monitored.."
+              }
+            },
+            "disableIpMasking": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether IP masking is enabled."
+              }
+            },
+            "disableLocalAuth": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether the application is enabled for local authentication."
+              }
+            },
+            "forceCustomerStorageForProfiler": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether forcing users to create their own storage account for profiler and debugger."
+              }
+            },
+            "immediatePurgeDataOn30Days": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether purging data immediately after 30 days."
+              }
+            },
+            "publicNetworkAccessForIngestion": {
+              "type": "string",
+              "defaultValue": "Enabled",
+              "allowedValues": [
+                "Enabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "Specifies the network access type for accessing Application Insights ingestion."
+              }
+            },
+            "publicNetworkAccessForQuery": {
+              "type": "string",
+              "defaultValue": "Enabled",
+              "allowedValues": [
+                "Enabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "Specifies the network access type for accessing Application Insights query."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the Azure Log Analytics workspace ID."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "[parameters('applicationType')]",
+                "DisableIpMasking": "[parameters('disableIpMasking')]",
+                "DisableLocalAuth": "[parameters('disableLocalAuth')]",
+                "Flow_Type": "Bluefield",
+                "ForceCustomerStorageForProfiler": "[parameters('forceCustomerStorageForProfiler')]",
+                "ImmediatePurgeDataOn30Days": "[parameters('immediatePurgeDataOn30Days')]",
+                "IngestionMode": "LogAnalytics",
+                "publicNetworkAccessForIngestion": "[parameters('publicNetworkAccessForIngestion')]",
+                "publicNetworkAccessForQuery": "[parameters('publicNetworkAccessForQuery')]",
+                "Request_Source": "rest",
+                "WorkspaceResourceId": "[parameters('workspaceId')]"
+              }
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "workspace"
+      ]
+    },
+    "keyVault": {
+      "condition": "[parameters('deployKeyVault')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "keyVault",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('keyVaultName')), createObject('value', format('{0}-key-vault-{1}', parameters('prefix'), parameters('suffix'))), createObject('value', parameters('keyVaultName')))]",
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "publicNetworkAccess": {
+            "value": "[parameters('keyVaultPublicNetworkAccess')]"
+          },
+          "networkAclsDefaultAction": {
+            "value": "[parameters('keyVaultNetworkAclsDefaultAction')]"
+          },
+          "enabledForDeployment": {
+            "value": "[parameters('keyVaultEnabledForDeployment')]"
+          },
+          "enabledForDiskEncryption": {
+            "value": "[parameters('keyVaultEnabledForDiskEncryption')]"
+          },
+          "enabledForTemplateDeployment": {
+            "value": "[parameters('keyVaultEnabledForTemplateDeployment')]"
+          },
+          "enablePurgeProtection": {
+            "value": "[parameters('keyVaultEnablePurgeProtection')]"
+          },
+          "enableRbacAuthorization": {
+            "value": "[parameters('keyVaultEnableRbacAuthorization')]"
+          },
+          "enableSoftDelete": {
+            "value": "[parameters('keyVaultEnableSoftDelete')]"
+          },
+          "softDeleteRetentionInDays": {
+            "value": "[parameters('keyVaultSoftDeleteRetentionInDays')]"
+          },
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
+          },
+          "userObjectId": {
+            "value": "[parameters('userObjectId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "1956904153806974535"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Key Vault resource."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "skuName": {
+              "type": "string",
+              "defaultValue": "standard",
+              "allowedValues": [
+                "premium",
+                "standard"
+              ],
+              "metadata": {
+                "description": "Specifies the sku name of the Key Vault resource."
+              }
+            },
+            "tenantId": {
+              "type": "string",
+              "defaultValue": "[subscription().tenantId]",
+              "metadata": {
+                "description": "Specifies the Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
+              }
+            },
+            "publicNetworkAccess": {
+              "type": "string",
+              "defaultValue": "Disabled",
+              "allowedValues": [
+                "Disabled",
+                "Enabled"
+              ],
+              "metadata": {
+                "description": "Specifies whether to allow public network access for Key Vault."
+              }
+            },
+            "networkAclsDefaultAction": {
+              "type": "string",
+              "defaultValue": "Deny",
+              "allowedValues": [
+                "Allow",
+                "Deny"
+              ],
+              "metadata": {
+                "description": "The default action of allow or deny when no other rules match. Allowed values: Allow or Deny"
+              }
+            },
+            "enabledForDeployment": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the Azure Key Vault resource is enabled for deployments."
+              }
+            },
+            "enabledForDiskEncryption": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the Azure Key Vault resource is enabled for disk encryption."
+              }
+            },
+            "enabledForTemplateDeployment": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the Azure Key Vault resource is enabled for template deployment."
+              }
+            },
+            "enablePurgeProtection": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether purge protection is enabled for this Azure Key Vault resource."
+              }
+            },
+            "enableRbacAuthorization": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether enable the RBAC authorization for the Azure Key Vault resource."
+              }
+            },
+            "enableSoftDelete": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the soft deelete is enabled for this Azure Key Vault resource."
+              }
+            },
+            "softDeleteRetentionInDays": {
+              "type": "int",
+              "defaultValue": 7,
+              "metadata": {
+                "description": "Specifies the soft delete retention in days."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Log Analytics workspace."
+              }
+            },
+            "userObjectId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specifies the object id of a Miccrosoft Entra ID user. In general, this the object id of the system administrator who deploys the Azure resources."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "logs",
+                "count": "[length(variables('logCategories'))]",
+                "input": {
+                  "category": "[variables('logCategories')[copyIndex('logs')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              },
+              {
+                "name": "metrics",
+                "count": "[length(variables('metricCategories'))]",
+                "input": {
+                  "category": "[variables('metricCategories')[copyIndex('metrics')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              }
+            ],
+            "diagnosticSettingsName": "diagnosticSettings",
+            "logCategories": [
+              "AuditEvent",
+              "AzurePolicyEvaluationDetails"
+            ],
+            "metricCategories": [
+              "AllMetrics"
+            ]
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2024-04-01-preview",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "createMode": "default",
+                "sku": {
+                  "family": "A",
+                  "name": "[parameters('skuName')]"
+                },
+                "tenantId": "[parameters('tenantId')]",
+                "networkAcls": {
+                  "bypass": "AzureServices",
+                  "defaultAction": "[parameters('networkAclsDefaultAction')]"
+                },
+                "enabledForDeployment": "[parameters('enabledForDeployment')]",
+                "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
+                "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+                "enablePurgeProtection": "[if(parameters('enablePurgeProtection'), parameters('enablePurgeProtection'), null())]",
+                "enableRbacAuthorization": "[parameters('enableRbacAuthorization')]",
+                "enableSoftDelete": "[parameters('enableSoftDelete')]",
+                "softDeleteRetentionInDays": "[parameters('softDeleteRetentionInDays')]",
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('name'))]",
+              "name": "[guid(resourceId('Microsoft.KeyVault/vaults', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b363-3b7fe8e74483'), parameters('userObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b363-3b7fe8e74483')]",
+                "principalType": "User",
+                "principalId": "[parameters('userObjectId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('name'))]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('logs')]",
+                "metrics": "[variables('metrics')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "workspace"
+      ]
+    },
+    "storageAccount": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "storageAccount",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('storageAccountName')), createObject('value', toLower(format('{0}account{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('storageAccountName')))]",
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "publicNetworkAccess": {
+            "value": "[parameters('storageAccountPublicNetworkAccess')]"
+          },
+          "accessTier": {
+            "value": "[parameters('storageAccountAccessTier')]"
+          },
+          "allowBlobPublicAccess": {
+            "value": "[parameters('storageAccountAllowBlobPublicAccess')]"
+          },
+          "allowSharedKeyAccess": {
+            "value": "[parameters('storageAccountAllowSharedKeyAccess')]"
+          },
+          "allowCrossTenantReplication": {
+            "value": "[parameters('storageAccountAllowCrossTenantReplication')]"
+          },
+          "minimumTlsVersion": {
+            "value": "[parameters('storageAccountMinimumTlsVersion')]"
+          },
+          "networkAclsDefaultAction": {
+            "value": "[parameters('storageAccountANetworkAclsDefaultAction')]"
+          },
+          "supportsHttpsTrafficOnly": {
+            "value": "[parameters('storageAccountSupportsHttpsTrafficOnly')]"
+          },
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
+          },
+          "createContainers": {
+            "value": "[parameters('storageAccountCreateContainers')]"
+          },
+          "containerNames": {
+            "value": "[parameters('storageAccountContainerNames')]"
+          },
+          "userObjectId": {
+            "value": "[parameters('userObjectId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "4514030674182412573"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name for the Azure Storage Account resource."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "publicNetworkAccess": {
+              "type": "string",
+              "defaultValue": "Disabled",
+              "allowedValues": [
+                "Disabled",
+                "Enabled"
+              ],
+              "metadata": {
+                "description": "Specifies whether to allow public network access for the storage account."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Log Analytics workspace."
+              }
+            },
+            "skuName": {
+              "type": "string",
+              "defaultValue": "Standard_LRS",
+              "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_GZRS",
+                "Standard_RAGRS",
+                "Standard_RAGZRS",
+                "Premium_LRS",
+                "Premium_ZRS"
+              ],
+              "metadata": {
+                "description": "Specifies the the storage SKU."
+              }
+            },
+            "accessTier": {
+              "type": "string",
+              "defaultValue": "Hot",
+              "metadata": {
+                "description": "Specifies the access tier of the storage account. The default value is Hot."
+              }
+            },
+            "allowBlobPublicAccess": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the storage account allows public access to blobs."
+              }
+            },
+            "allowSharedKeyAccess": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the storage account allows shared key access."
+              }
+            },
+            "allowCrossTenantReplication": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether the storage account allows cross-tenant replication."
+              }
+            },
+            "minimumTlsVersion": {
+              "type": "string",
+              "defaultValue": "TLS1_2",
+              "metadata": {
+                "description": "Specifies the minimum TLS version to be permitted on requests to storage. The default value is TLS1_2."
+              }
+            },
+            "networkAclsDefaultAction": {
+              "type": "string",
+              "defaultValue": "Deny",
+              "allowedValues": [
+                "Allow",
+                "Deny"
+              ],
+              "metadata": {
+                "description": "The default action of allow or deny when no other rules match. Allowed values: Allow or Deny"
+              }
+            },
+            "isHnsEnabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether Hierarchical Namespace is enabled."
+              }
+            },
+            "isNfsV3Enabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether NFSv3 is enabled."
+              }
+            },
+            "keyExpirationPeriodInDays": {
+              "type": "int",
+              "defaultValue": 7,
+              "metadata": {
+                "description": "Specifies the key expiration period in days."
+              }
+            },
+            "supportsHttpsTrafficOnly": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the storage account should only support HTTPS traffic."
+              }
+            },
+            "largeFileSharesState": {
+              "type": "string",
+              "defaultValue": "Disabled",
+              "allowedValues": [
+                "Disabled",
+                "Enabled"
+              ],
+              "metadata": {
+                "description": "Specifies whether large file shares are enabled. The default value is Disabled."
+              }
+            },
+            "userObjectId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specifies the object id of a Miccrosoft Entra ID user. In general, this the object id of the system administrator who deploys the Azure resources."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            },
+            "createContainers": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether to create containers."
+              }
+            },
+            "containerNames": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Specifies an array of containers to create."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "logs",
+                "count": "[length(variables('logCategories'))]",
+                "input": {
+                  "category": "[variables('logCategories')[copyIndex('logs')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              },
+              {
+                "name": "metrics",
+                "count": "[length(variables('metricCategories'))]",
+                "input": {
+                  "category": "[variables('metricCategories')[copyIndex('metrics')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              }
+            ],
+            "diagnosticSettingsName": "diagnosticSettings",
+            "logCategories": [
+              "StorageRead",
+              "StorageWrite",
+              "StorageDelete"
+            ],
+            "metricCategories": [
+              "Transaction"
+            ]
+          },
+          "resources": [
+            {
+              "copy": {
+                "name": "storageAccount::blobService::containers",
+                "count": "[length(parameters('containerNames'))]"
+              },
+              "condition": "[parameters('createContainers')]",
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', parameters('name'), 'default', parameters('containerNames')[copyIndex()])]",
+              "properties": {
+                "publicAccess": "None"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('name'), 'default')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "[parameters('skuName')]"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "accessTier": "[parameters('accessTier')]",
+                "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+                "allowCrossTenantReplication": "[parameters('allowCrossTenantReplication')]",
+                "allowSharedKeyAccess": "[parameters('allowSharedKeyAccess')]",
+                "encryption": {
+                  "keySource": "Microsoft.Storage",
+                  "requireInfrastructureEncryption": false,
+                  "services": {
+                    "blob": {
+                      "enabled": true,
+                      "keyType": "Account"
+                    },
+                    "file": {
+                      "enabled": true,
+                      "keyType": "Account"
+                    },
+                    "queue": {
+                      "enabled": true,
+                      "keyType": "Service"
+                    },
+                    "table": {
+                      "enabled": true,
+                      "keyType": "Service"
+                    }
+                  }
+                },
+                "isHnsEnabled": "[parameters('isHnsEnabled')]",
+                "isNfsV3Enabled": "[parameters('isNfsV3Enabled')]",
+                "keyPolicy": {
+                  "keyExpirationPeriodInDays": "[parameters('keyExpirationPeriodInDays')]"
+                },
+                "largeFileSharesState": "[parameters('largeFileSharesState')]",
+                "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
+                "networkAcls": {
+                  "bypass": "AzureServices",
+                  "defaultAction": "[parameters('networkAclsDefaultAction')]"
+                },
+                "supportsHttpsTrafficOnly": "[parameters('supportsHttpsTrafficOnly')]"
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab'), parameters('userObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')]",
+                "principalType": "User",
+                "principalId": "[parameters('userObjectId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'), parameters('userObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                "principalType": "User",
+                "principalId": "[parameters('userObjectId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '69566ab7-960f-475b-8e7c-b3118f30c6bd'), parameters('userObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '69566ab7-960f-475b-8e7c-b3118f30c6bd')]",
+                "principalType": "User",
+                "principalId": "[parameters('userObjectId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'), parameters('userObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                "principalType": "User",
+                "principalId": "[parameters('userObjectId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}/blobServices/{1}', parameters('name'), 'default')]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('logs')]",
+                "metrics": "[variables('metrics')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('name'), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "workspace"
+      ]
+    },
+    "network": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "network",
+      "resourceGroup": "[parameters('virtualNetworkResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('virtualNetworkName')), createObject('value', toLower(format('{0}-vnet-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('virtualNetworkName')))]",
+          "virtualNetworkAddressPrefixes": {
+            "value": "[parameters('virtualNetworkAddressPrefixes')]"
+          },
+          "delegationServiceName": "[if(equals(parameters('hostingPlanSkuTier'), 'FlexConsumption'), createObject('value', 'Microsoft.App/environments'), createObject('value', 'Microsoft.Web/serverfarms'))]",
+          "functionAppSubnetName": {
+            "value": "[parameters('functionAppSubnetName')]"
+          },
+          "functionAppSubnetAddressPrefix": {
+            "value": "[parameters('functionAppSubnetAddressPrefix')]"
+          },
+          "peSubnetName": {
+            "value": "[parameters('peSubnetName')]"
+          },
+          "peSubnetAddressPrefix": {
+            "value": "[parameters('peSubnetAddressPrefix')]"
+          },
+          "natGatewayName": "[if(empty(parameters('natGatewayName')), createObject('value', toLower(format('{0}-nat-gateway-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('natGatewayName')))]",
+          "natGatewayZones": {
+            "value": "[parameters('natGatewayZones')]"
+          },
+          "natGatewayPublicIps": {
+            "value": "[parameters('natGatewayPublicIps')]"
+          },
+          "natGatewayIdleTimeoutMins": {
+            "value": "[parameters('natGatewayIdleTimeoutMins')]"
+          },
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "17930322596323204069"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the virtual network."
+              }
+            },
+            "delegationServiceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the delegation service name."
+              }
+            },
+            "virtualNetworkAddressPrefixes": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/8",
+              "metadata": {
+                "description": "Specifies the address prefixes of the virtual network."
+              }
+            },
+            "functionAppSubnetName": {
+              "type": "string",
+              "defaultValue": "functionAppSubnet",
+              "metadata": {
+                "description": "Specifies the name of the subnet used by Azure Functions for the regional virtual network integration."
+              }
+            },
+            "functionAppSubnetAddressPrefix": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/24",
+              "metadata": {
+                "description": "Specifies the address prefix of the subnet used by Azure Functions for the regional virtual network integration."
+              }
+            },
+            "peSubnetName": {
+              "type": "string",
+              "defaultValue": "PeSubnet",
+              "metadata": {
+                "description": "Specifies the name of the subnet which contains private endpoints."
+              }
+            },
+            "peSubnetAddressPrefix": {
+              "type": "string",
+              "defaultValue": "10.0.1.0/24",
+              "metadata": {
+                "description": "Specifies the address prefix of the subnet which contains private endpoints."
+              }
+            },
+            "natGatewayName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure NAT Gateway."
+              }
+            },
+            "natGatewayZones": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Specifies a list of availability zones denoting the zone in which Nat Gateway should be deployed."
+              }
+            },
+            "natGatewayPublicIps": {
+              "type": "int",
+              "defaultValue": 1,
+              "metadata": {
+                "description": "Specifies the number of Public IPs to create for the Azure NAT Gateway."
+              }
+            },
+            "natGatewayIdleTimeoutMins": {
+              "type": "int",
+              "defaultValue": 30,
+              "metadata": {
+                "description": "Specifies the idle timeout in minutes for the Azure NAT Gateway."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Log Analytics workspace."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "vnetLogs",
+                "count": "[length(variables('vnetLogCategories'))]",
+                "input": {
+                  "category": "[variables('vnetLogCategories')[copyIndex('vnetLogs')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              },
+              {
+                "name": "vnetMetrics",
+                "count": "[length(variables('vnetMetricCategories'))]",
+                "input": {
+                  "category": "[variables('vnetMetricCategories')[copyIndex('vnetMetrics')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              }
+            ],
+            "diagnosticSettingsName": "diagnosticSettings",
+            "vnetLogCategories": [
+              "VMProtectionAlerts"
+            ],
+            "vnetMetricCategories": [
+              "AllMetrics"
+            ]
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('virtualNetworkAddressPrefixes')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('functionAppSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('functionAppSubnetAddressPrefix')]",
+                      "privateEndpointNetworkPolicies": "Disabled",
+                      "privateLinkServiceNetworkPolicies": "Disabled",
+                      "natGateway": {
+                        "id": "[resourceId('Microsoft.Network/natGateways', parameters('natGatewayName'))]"
+                      },
+                      "delegations": [
+                        {
+                          "name": "delegation",
+                          "properties": {
+                            "serviceName": "[parameters('delegationServiceName')]"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "[parameters('peSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('peSubnetAddressPrefix')]",
+                      "privateEndpointNetworkPolicies": "Disabled",
+                      "privateLinkServiceNetworkPolicies": "Disabled"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/natGateways', parameters('natGatewayName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "natGatewayPublicIp",
+                "count": "[length(range(0, parameters('natGatewayPublicIps')))]"
+              },
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2024-05-01",
+              "name": "[if(equals(parameters('natGatewayPublicIps'), 1), format('{0}-public-ip', parameters('natGatewayName')), format('{0}-public-ip-{1}', parameters('natGatewayName'), add(range(0, parameters('natGatewayPublicIps'))[copyIndex()], 1)))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "zones": "[if(not(empty(parameters('natGatewayZones'))), parameters('natGatewayZones'), createArray())]",
+              "properties": {
+                "publicIPAllocationMethod": "Static"
+              }
+            },
+            {
+              "type": "Microsoft.Network/natGateways",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('natGatewayName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "zones": "[if(not(empty(parameters('natGatewayZones'))), parameters('natGatewayZones'), createArray())]",
+              "properties": {
+                "copy": [
+                  {
+                    "name": "publicIpAddresses",
+                    "count": "[length(range(0, parameters('natGatewayPublicIps')))]",
+                    "input": {
+                      "id": "[resourceId('Microsoft.Network/publicIPAddresses', if(equals(parameters('natGatewayPublicIps'), 1), format('{0}-public-ip', parameters('natGatewayName')), format('{0}-public-ip-{1}', parameters('natGatewayName'), add(range(0, parameters('natGatewayPublicIps'))[range(0, parameters('natGatewayPublicIps'))[copyIndex('publicIpAddresses')]], 1))))]"
+                    }
+                  }
+                ],
+                "idleTimeoutInMinutes": "[parameters('natGatewayIdleTimeoutMins')]"
+              },
+              "dependsOn": [
+                "natGatewayPublicIp"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Network/virtualNetworks/{0}', parameters('name'))]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('vnetLogs')]",
+                "metrics": "[variables('vnetMetrics')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "virtualNetworkId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "functionAppSubnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('name'), parameters('functionAppSubnetName'))]"
+            },
+            "peSubnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('name'), parameters('peSubnetName'))]"
+            },
+            "functionAppSubnetName": {
+              "type": "string",
+              "value": "[parameters('functionAppSubnetName')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "workspace"
+      ]
+    },
+    "cosmosDb": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "cosmosDb",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "accountName": "[if(empty(parameters('cosmosDbAccountName')), createObject('value', toLower(format('{0}-cosmos-db-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('cosmosDbAccountName')))]",
+          "networkAclBypass": {
+            "value": "[parameters('cosmosDbAccountNetworkAclBypass')]"
+          },
+          "publicNetworkAccess": {
+            "value": "[parameters('cosmosDbAccountPublicNetworkAccess')]"
+          },
+          "disableLocalAuth": {
+            "value": "[parameters('cosmosDbAccountDisableLocalAuth')]"
+          },
+          "databaseName": {
+            "value": "[parameters('cosmosDbDatabaseName')]"
+          },
+          "containerName": {
+            "value": "[parameters('cosmosDbContainerName')]"
+          },
+          "ipRules": {
+            "value": "[parameters('cosmosDbIpRules')]"
+          },
+          "userObjectId": {
+            "value": "[parameters('userObjectId')]"
+          },
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "9609130121490295574"
+            }
+          },
+          "parameters": {
+            "accountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB account."
+              }
+            },
+            "kind": {
+              "type": "string",
+              "defaultValue": "GlobalDocumentDB",
+              "allowedValues": [
+                "GlobalDocumentDB",
+                "MongoDB",
+                "Parse"
+              ],
+              "metadata": {
+                "description": "Indicates the type of database account. This can only be set at database account creation."
+              }
+            },
+            "publicNetworkAccess": {
+              "type": "string",
+              "defaultValue": "Enabled",
+              "allowedValues": [
+                "Enabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "Specifies whether the public network access is enabled or disabled"
+              }
+            },
+            "networkAclBypass": {
+              "type": "string",
+              "defaultValue": "AzureServices",
+              "allowedValues": [
+                "AzureServices",
+                "None"
+              ],
+              "metadata": {
+                "description": "Indicates what services are allowed to bypass firewall checks."
+              }
+            },
+            "disableLocalAuth": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether disable the local authentication via API key."
+              }
+            },
+            "databaseName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB database."
+              }
+            },
+            "databaseThroughput": {
+              "type": "int",
+              "defaultValue": 400,
+              "metadata": {
+                "description": "Specifies the throughput of the Azure Cosmos DB database."
+              }
+            },
+            "containerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB container."
+              }
+            },
+            "ipRules": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Specifies the IP rules for the Azure Cosmos DB database."
+              }
+            },
+            "containerPartitionKey": {
+              "type": "string",
+              "defaultValue": "/id",
+              "metadata": {
+                "description": "Specifies the partition key of the container."
+              }
+            },
+            "indexingMode": {
+              "type": "string",
+              "defaultValue": "consistent",
+              "allowedValues": [
+                "consistent",
+                "lazy",
+                "none"
+              ],
+              "metadata": {
+                "description": "indexingMode\tIndicates the indexing mode."
+              }
+            },
+            "userObjectId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specifies the object id of a Miccrosoft Entra ID user. In general, this the object id of the system administrator who deploys the Azure resources."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Log Analytics workspace."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "logs",
+                "count": "[length(variables('logCategories'))]",
+                "input": {
+                  "category": "[variables('logCategories')[copyIndex('logs')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              },
+              {
+                "name": "metrics",
+                "count": "[length(variables('metricCategories'))]",
+                "input": {
+                  "category": "[variables('metricCategories')[copyIndex('metrics')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              }
+            ],
+            "diagnosticSettingsName": "diagnosticSettings",
+            "logCategories": [
+              "DataPlaneRequests",
+              "MongoRequests",
+              "QueryRuntimeStatistics",
+              "PartitionKeyStatistics",
+              "PartitionKeyRUConsumption",
+              "ControlPlaneRequests",
+              "CassandraRequests",
+              "GremlinRequests",
+              "TableApiRequests"
+            ],
+            "metricCategories": [
+              "Requests"
+            ]
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[toLower(parameters('accountName'))]",
+              "kind": "[parameters('kind')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": [
+                  {
+                    "locationName": "[parameters('location')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ],
+                "databaseAccountOfferType": "Standard",
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "networkAclBypass": "[parameters('networkAclBypass')]",
+                "disableLocalAuth": "[parameters('disableLocalAuth')]",
+                "ipRules": "[parameters('ipRules')]"
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', toLower(parameters('accountName')), parameters('databaseName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('databaseName')]"
+                },
+                "options": {
+                  "throughput": "[parameters('databaseThroughput')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', toLower(parameters('accountName')), parameters('databaseName'), parameters('containerName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('containerName')]",
+                  "partitionKey": {
+                    "paths": [
+                      "[parameters('containerPartitionKey')]"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "[parameters('indexingMode')]",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/\"_etag\"/?"
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', toLower(parameters('accountName')), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', toLower(parameters('accountName')))]",
+              "name": "[guid(resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName'))), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '230815da-be43-4aae-9cb4-875f7bd000aa'), parameters('userObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '230815da-be43-4aae-9cb4-875f7bd000aa')]",
+                "principalType": "User",
+                "principalId": "[parameters('userObjectId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-05-15",
+              "name": "[format('{0}/{1}', toLower(parameters('accountName')), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName'))), resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', toLower(parameters('accountName')), parameters('databaseName')), parameters('userObjectId'), resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', toLower(parameters('accountName')), '00000000-0000-0000-0000-000000000002')))]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', toLower(parameters('accountName')), '00000000-0000-0000-0000-000000000002')]",
+                "principalId": "[parameters('userObjectId')]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', toLower(parameters('accountName')), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', toLower(parameters('accountName')))]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('logs')]",
+                "metrics": "[variables('metrics')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "accountId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+            },
+            "accountName": {
+              "type": "string",
+              "value": "[toLower(parameters('accountName'))]"
+            },
+            "databaseId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', toLower(parameters('accountName')), parameters('databaseName'))]"
+            },
+            "databaseName": {
+              "type": "string",
+              "value": "[parameters('databaseName')]"
+            },
+            "containerId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers', toLower(parameters('accountName')), parameters('databaseName'), parameters('containerName'))]"
+            },
+            "containerName": {
+              "type": "string",
+              "value": "[parameters('containerName')]"
+            },
+            "documentEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName'))), '2024-12-01-preview').documentEndpoint]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "workspace"
+      ]
+    },
+    "openAi": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "openAi",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('openAiName')), createObject('value', toLower(format('{0}-open-ai-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('openAiName')))]",
+          "sku": {
+            "value": "[parameters('openAiSku')]"
+          },
+          "identity": {
+            "value": "[parameters('openAiIdentity')]"
+          },
+          "customSubDomainName": "[if(empty(parameters('openAiCustomSubDomainName')), if(empty(parameters('openAiName')), createObject('value', toLower(format('{0}-open-ai-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('openAiName'))), createObject('value', parameters('openAiCustomSubDomainName')))]",
+          "disableLocalAuth": {
+            "value": "[parameters('openAiDisableLocalAuth')]"
+          },
+          "publicNetworkAccess": {
+            "value": "[parameters('openAiPublicNetworkAccess')]"
+          },
+          "deployments": {
+            "value": "[parameters('openAiDeployments')]"
+          },
+          "userObjectId": {
+            "value": "[parameters('userObjectId')]"
+          },
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
+          },
+          "location": {
+            "value": "[parameters('openAiLocation')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "15875016248718049607"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure OpenAI resource."
+              }
+            },
+            "sku": {
+              "type": "object",
+              "defaultValue": {
+                "name": "S0"
+              },
+              "metadata": {
+                "description": "Specifies the resource model definition representing SKU."
+              }
+            },
+            "identity": {
+              "type": "object",
+              "defaultValue": {
+                "type": "SystemAssigned"
+              },
+              "metadata": {
+                "description": "Specifies the identity of the OpenAI resource."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "customSubDomainName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specifies an optional subdomain name used for token-based authentication."
+              }
+            },
+            "disableLocalAuth": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Specifies whether disable the local authentication via API key."
+              }
+            },
+            "publicNetworkAccess": {
+              "type": "string",
+              "defaultValue": "Enabled",
+              "allowedValues": [
+                "Enabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "Specifies whether or not public endpoint access is allowed for this account.."
+              }
+            },
+            "deployments": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Specifies the OpenAI deployments to create."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the workspace id of the Log Analytics used to monitor the Application Gateway."
+              }
+            },
+            "userObjectId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specifies the object id of a Miccrosoft Entra ID user. In general, this the object id of the system administrator who deploys the Azure resources."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "openAiLogs",
+                "count": "[length(variables('openAiLogCategories'))]",
+                "input": {
+                  "category": "[variables('openAiLogCategories')[copyIndex('openAiLogs')]]",
+                  "enabled": true
+                }
+              },
+              {
+                "name": "openAiMetrics",
+                "count": "[length(variables('openAiMetricCategories'))]",
+                "input": {
+                  "category": "[variables('openAiMetricCategories')[copyIndex('openAiMetrics')]]",
+                  "enabled": true
+                }
+              }
+            ],
+            "diagnosticSettingsName": "diagnosticSettings",
+            "openAiLogCategories": [
+              "Audit",
+              "RequestResponse",
+              "Trace"
+            ],
+            "openAiMetricCategories": [
+              "AllMetrics"
+            ]
+          },
+          "resources": [
+            {
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2024-10-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "sku": "[parameters('sku')]",
+              "kind": "OpenAI",
+              "identity": "[parameters('identity')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "customSubDomainName": "[parameters('customSubDomainName')]",
+                "disableLocalAuth": "[parameters('disableLocalAuth')]",
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
+              }
+            },
+            {
+              "copy": {
+                "name": "model",
+                "count": "[length(parameters('deployments'))]",
+                "mode": "serial",
+                "batchSize": 1
+              },
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', parameters('name'), parameters('deployments')[copyIndex()].model.name)]",
+              "sku": {
+                "capacity": "[coalesce(parameters('deployments')[copyIndex()].sku.capacity, 100)]",
+                "name": "[if(empty(parameters('deployments')[copyIndex()].sku.name), 'Standard', parameters('deployments')[copyIndex()].sku.name)]"
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "[parameters('deployments')[copyIndex()].model.name]",
+                  "version": "[parameters('deployments')[copyIndex()].model.version]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('name'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('userObjectId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('name'))]",
+              "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908'), parameters('userObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908')]",
+                "principalType": "User",
+                "principalId": "[parameters('userObjectId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('name'))]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('openAiLogs')]",
+                "metrics": "[variables('openAiMetrics')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "workspace"
+      ]
+    },
+    "privateEndpoints": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "privateEndpoints",
+      "resourceGroup": "[parameters('virtualNetworkResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "subnetId": {
+            "value": "[reference('network').outputs.peSubnetId.value]"
+          },
+          "blobStorageAccountPrivateEndpointName": "[if(empty(parameters('blobStorageAccountPrivateEndpointName')), createObject('value', toLower(format('{0}-blob-storage-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('blobStorageAccountPrivateEndpointName')))]",
+          "fileStorageAccountPrivateEndpointName": "[if(empty(parameters('fileStorageAccountPrivateEndpointName')), createObject('value', toLower(format('{0}-file-storage-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('fileStorageAccountPrivateEndpointName')))]",
+          "keyVaultPrivateEndpointName": "[if(empty(parameters('keyVaultPrivateEndpointName')), createObject('value', toLower(format('{0}-key-vault-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('keyVaultPrivateEndpointName')))]",
+          "openAiPrivateEndpointName": "[if(empty(parameters('openAiPrivateEndpointName')), createObject('value', toLower(format('{0}-open-ai-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('openAiPrivateEndpointName')))]",
+          "cosmosDbPrivateEndpointName": "[if(empty(parameters('cosmosDbPrivateEndpointName')), createObject('value', toLower(format('{0}-cosmos-db-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('cosmosDbPrivateEndpointName')))]",
+          "storageAccountId": {
+            "value": "[reference('storageAccount').outputs.id.value]"
+          },
+          "keyVaultId": {
+            "value": "[reference('keyVault').outputs.id.value]"
+          },
+          "openAiId": {
+            "value": "[reference('openAi').outputs.id.value]"
+          },
+          "cosmosDbAccountId": {
+            "value": "[reference('cosmosDb').outputs.accountId.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "1028614780088284147"
+            }
+          },
+          "functions": [
+            {
+              "namespace": "__bicep",
+              "members": {
+                "getVirtualNetworkIdFromSubnetId": {
+                  "parameters": [
+                    {
+                      "type": "string",
+                      "name": "subnetId"
+                    }
+                  ],
+                  "output": {
+                    "type": "string",
+                    "value": "[join(take(split(parameters('subnetId'), '/'), 9), '/')]"
+                  },
+                  "metadata": {
+                    "description": "Gets the virtual network resource ID from the subnet resource ID",
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "bicepFunctions.bicep"
+                    }
+                  }
+                },
+                "getVirtualNetworkNameFromSubnetId": {
+                  "parameters": [
+                    {
+                      "type": "string",
+                      "name": "subnetId"
+                    }
+                  ],
+                  "output": {
+                    "type": "string",
+                    "value": "[split(parameters('subnetId'), '/')[8]]"
+                  },
+                  "metadata": {
+                    "description": "Gets the virtual network resource ID from the subnet resource ID",
+                    "__bicep_imported_from!": {
+                      "sourceTemplate": "bicepFunctions.bicep"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "parameters": {
+            "subnetId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource ID of the subnet where private endpoints will be created."
+              }
+            },
+            "blobStorageAccountPrivateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the private endpoint to the blob storage account."
+              }
+            },
+            "fileStorageAccountPrivateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the private endpoint to the file storage account."
+              }
+            },
+            "storageAccountId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Azure Storage Account."
+              }
+            },
+            "keyVaultPrivateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the private endpoint to the Key Vault."
+              }
+            },
+            "keyVaultId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Azure Key vault."
+              }
+            },
+            "openAiId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Azure OpenAI resource."
+              }
+            },
+            "openAiPrivateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the private link to the Azure OpenAI resource."
+              }
+            },
+            "cosmosDbPrivateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the private endpoint to Cosmos DB."
+              }
+            },
+            "cosmosDbAccountId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Azure Cosmos DB."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "variables": {
+            "virtualNetworkName": "[__bicep.getVirtualNetworkNameFromSubnetId(parameters('subnetId'))]"
+          },
+          "resources": {
+            "vnet": {
+              "existing": true,
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2024-05-01",
+              "name": "[variables('virtualNetworkName')]"
+            },
+            "blobPrivateDnsZone": {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.blob.{0}', environment().suffixes.storage)]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            "filePrivateDnsZone": {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.file.{0}', environment().suffixes.storage)]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            "keyVaultPrivateDnsZone": {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'vaultcore.usgovcloudapi.net', 'vaultcore.azure.net'))]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            "openAiPrivateDnsZone": {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'openai.usgovcloudapi.net', 'openai.azure.com'))]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            "cosmosDbPrivateDnsZone": {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'documents.azure.us', 'documents.azure.com'))]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            "blobPrivateDnsZoneVirtualNetworkLink": {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.blob.{0}', environment().suffixes.storage), format('link_to_{0}', toLower(variables('virtualNetworkName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
+              },
+              "dependsOn": [
+                "blobPrivateDnsZone"
+              ]
+            },
+            "filePrivateDnsZoneVirtualNetworkLink": {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.file.{0}', environment().suffixes.storage), format('link_to_{0}', toLower(variables('virtualNetworkName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
+              },
+              "dependsOn": [
+                "filePrivateDnsZone"
+              ]
+            },
+            "keyVaultPrivateDnsZoneVirtualNetworkLink": {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'vaultcore.usgovcloudapi.net', 'vaultcore.azure.net')), format('link_to_{0}', toLower(variables('virtualNetworkName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
+              },
+              "dependsOn": [
+                "keyVaultPrivateDnsZone"
+              ]
+            },
+            "openAiPrivateDnsZoneVirtualNetworkLink": {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'openai.usgovcloudapi.net', 'openai.azure.com')), format('link_to_{0}', toLower(variables('virtualNetworkName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
+              },
+              "dependsOn": [
+                "openAiPrivateDnsZone"
+              ]
+            },
+            "cosmosDbPrivateDnsZoneVirtualNetworkLink": {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'documents.azure.us', 'documents.azure.com')), format('link_to_{0}', toLower(variables('virtualNetworkName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
+              },
+              "dependsOn": [
+                "cosmosDbPrivateDnsZone"
+              ]
+            },
+            "blobStorageAccountPrivateEndpoint": {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('blobStorageAccountPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('blobStorageAccountPrivateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('storageAccountId')]",
+                      "groupIds": [
+                        "blob"
+                      ]
+                    }
+                  }
+                ],
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            },
+            "blobStorageAccountPrivateDnsZoneGroupName": {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('blobStorageAccountPrivateEndpointName'), 'PrivateDnsZoneGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "dnsConfig",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.blob.{0}', environment().suffixes.storage))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "blobPrivateDnsZone",
+                "blobStorageAccountPrivateEndpoint"
+              ]
+            },
+            "fileStorageAccountPrivateEndpoint": {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('fileStorageAccountPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('fileStorageAccountPrivateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('storageAccountId')]",
+                      "groupIds": [
+                        "file"
+                      ]
+                    }
+                  }
+                ],
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            },
+            "fileStorageAccountPrivateDnsZoneGroupName": {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('fileStorageAccountPrivateEndpointName'), 'PrivateDnsZoneGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "dnsConfig",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.file.{0}', environment().suffixes.storage))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "filePrivateDnsZone",
+                "fileStorageAccountPrivateEndpoint"
+              ]
+            },
+            "keyVaultPrivateEndpoint": {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('keyVaultPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('keyVaultPrivateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('keyVaultId')]",
+                      "groupIds": [
+                        "vault"
+                      ]
+                    }
+                  }
+                ],
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            },
+            "keyVaultPrivateDnsZoneGroupName": {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultPrivateEndpointName'), 'PrivateDnsZoneGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "dnsConfig",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'vaultcore.usgovcloudapi.net', 'vaultcore.azure.net')))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "keyVaultPrivateDnsZone",
+                "keyVaultPrivateEndpoint"
+              ]
+            },
+            "openAiPrivateEndpoint": {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('openAiPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('openAiPrivateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('openAiId')]",
+                      "groupIds": [
+                        "account"
+                      ]
+                    }
+                  }
+                ],
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            },
+            "openAiPrivateDnsZoneGroupName": {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('openAiPrivateEndpointName'), 'PrivateDnsZoneGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "dnsConfig",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'openai.usgovcloudapi.net', 'openai.azure.com')))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "openAiPrivateDnsZone",
+                "openAiPrivateEndpoint"
+              ]
+            },
+            "cosmosDbPrivateEndpoint": {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('cosmosDbPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('cosmosDbPrivateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('cosmosDbAccountId')]",
+                      "groupIds": [
+                        "Sql"
+                      ]
+                    }
+                  }
+                ],
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            },
+            "cosmosDbPrivateDnsZoneGroup": {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('cosmosDbPrivateEndpointName'), 'PrivateDnsZoneGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "dnsConfig",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.{0}', if(equals(toLower(environment().name), 'azureusgovernment'), 'documents.azure.us', 'documents.azure.com')))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "cosmosDbPrivateDnsZone",
+                "cosmosDbPrivateEndpoint"
+              ]
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "cosmosDb",
+        "keyVault",
+        "network",
+        "openAi",
+        "storageAccount"
+      ]
+    },
+    "serverFarm": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "serverFarm",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('hostingPlanName')), createObject('value', toLower(format('{0}-hosting-plan-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('hostingPlanName')))]",
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "skuTier": {
+            "value": "[parameters('hostingPlanSkuTier')]"
+          },
+          "skuName": {
+            "value": "[parameters('hostingPlanSkuName')]"
+          },
+          "kind": {
+            "value": "[parameters('hostingPlanKind')]"
+          },
+          "zoneRedundant": {
+            "value": "[parameters('hostingPlanZoneRedundant')]"
+          },
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
+          },
+          "isReserved": {
+            "value": "[parameters('hostingPlanIsReserved')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "17342338262613446913"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the hosting plan."
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the location of the hosting plan."
+              }
+            },
+            "skuTier": {
+              "type": "string",
+              "defaultValue": "ElasticPremium",
+              "allowedValues": [
+                "Basic",
+                "Standard",
+                "ElasticPremium",
+                "Premium",
+                "PremiumV2",
+                "Premium0V3",
+                "PremiumV3",
+                "PremiumMV3",
+                "Isolated",
+                "IsolatedV2",
+                "WorkflowStandard",
+                "FlexConsumption"
+              ],
+              "metadata": {
+                "description": "Specifies the tier name for the hosting plan."
+              }
+            },
+            "skuName": {
+              "type": "string",
+              "defaultValue": "EP1",
+              "allowedValues": [
+                "B1",
+                "B2",
+                "B3",
+                "S1",
+                "S2",
+                "S3",
+                "EP1",
+                "EP2",
+                "EP3",
+                "P1",
+                "P2",
+                "P3",
+                "P1V2",
+                "P2V2",
+                "P3V2",
+                "P0V3",
+                "P1V3",
+                "P2V3",
+                "P3V3",
+                "P1MV3",
+                "P2MV3",
+                "P3MV3",
+                "P4MV3",
+                "P5MV3",
+                "I1",
+                "I2",
+                "I3",
+                "I1V2",
+                "I2V2",
+                "I3V2",
+                "I4V2",
+                "I5V2",
+                "I6V2",
+                "WS1",
+                "WS2",
+                "WS3",
+                "FC1"
+              ],
+              "metadata": {
+                "description": "Specifies the SKU name for the hosting plan."
+              }
+            },
+            "kind": {
+              "type": "string",
+              "defaultValue": "elastic",
+              "allowedValues": [
+                "app",
+                "elastic",
+                "functionapp",
+                "windows",
+                "linux"
+              ],
+              "metadata": {
+                "description": "Specifies the kind of the hosting plan."
+              }
+            },
+            "zoneRedundant": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether the hosting plan is zone redundant."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Log Analytics workspace."
+              }
+            },
+            "isReserved": {
+              "type": "bool",
+              "metadata": {
+                "description": "Specifies whether the hosting plan is reserved."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "logs",
+                "count": "[length(variables('logCategories'))]",
+                "input": {
+                  "category": "[variables('logCategories')[copyIndex('logs')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              },
+              {
+                "name": "metrics",
+                "count": "[length(variables('metricCategories'))]",
+                "input": {
+                  "category": "[variables('metricCategories')[copyIndex('metrics')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              }
+            ],
+            "diagnosticSettingsName": "diagnosticSettings",
+            "logCategories": [],
+            "metricCategories": [
+              "AllMetrics"
+            ]
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2024-04-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "[parameters('kind')]",
+              "sku": {
+                "tier": "[parameters('skuTier')]",
+                "name": "[parameters('skuName')]"
+              },
+              "properties": {
+                "reserved": "[parameters('isReserved')]",
+                "zoneRedundant": "[parameters('zoneRedundant')]",
+                "maximumElasticWorkerCount": "[if(equals(parameters('skuTier'), 'FlexConsumption'), 1, 20)]"
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('workspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Web/serverfarms/{0}', parameters('name'))]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('logs')]",
+                "metrics": "[variables('metrics')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/serverfarms', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "workspace"
+      ]
+    },
+    "managedIdentity": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "managedIdentity",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('functionAppName')), createObject('value', toLower(format('{0}-function-app-{1}-identity', parameters('prefix'), parameters('suffix')))), createObject('value', format('{0}-identity', parameters('functionAppName'))))]",
+          "storageAccountName": {
+            "value": "[reference('storageAccount').outputs.name.value]"
+          },
+          "applicationInsightsName": {
+            "value": "[reference('applicationInsights').outputs.name.value]"
+          },
+          "openAiName": {
+            "value": "[reference('openAi').outputs.name.value]"
+          },
+          "accountName": {
+            "value": "[reference('cosmosDb').outputs.accountName.value]"
+          },
+          "databaseName": {
+            "value": "[reference('cosmosDb').outputs.databaseName.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "12197947599752883456"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the user-defined managed identity."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name for the Azure Storage Account resource."
+              }
+            },
+            "applicationInsightsName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Application Insights."
+              }
+            },
+            "openAiName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure OpenAI resource."
+              }
+            },
+            "accountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB account."
+              }
+            },
+            "databaseName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB database."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '974c5e8b-45b9-4653-ba55-5f855dd0fb88'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '974c5e8b-45b9-4653-ba55-5f855dd0fb88')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Insights/components/{0}', parameters('applicationInsightsName'))]",
+              "name": "[guid(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3913510d-42f4-4e42-8a64-420c390055eb'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3913510d-42f4-4e42-8a64-420c390055eb')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('openAiName'))]",
+              "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', parameters('openAiName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-05-15",
+              "name": "[format('{0}/{1}', toLower(parameters('accountName')), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName'))), resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', toLower(parameters('accountName')), parameters('databaseName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', toLower(parameters('accountName')), '00000000-0000-0000-0000-000000000002')))]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', toLower(parameters('accountName')), '00000000-0000-0000-0000-000000000002')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]"
+            },
+            "clientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').clientId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "applicationInsights",
+        "cosmosDb",
+        "openAi",
+        "storageAccount"
+      ]
+    },
+    "functionApp": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "functionApp",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('functionAppName')), createObject('value', toLower(format('{0}-function-app-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('functionAppName')))]",
+          "kind": {
+            "value": "[parameters('functionAppKind')]"
+          },
+          "runtimeName": {
+            "value": "[parameters('functionAppRuntimeName')]"
+          },
+          "runtimeVersion": {
+            "value": "[parameters('functionAppRuntimeVersion')]"
+          },
+          "allowedCorsOrigins": {
+            "value": "[parameters('allowedCorsOrigins')]"
+          },
+          "publicNetworkAccess": {
+            "value": "[parameters('functionAppPublicNetworkAccess')]"
+          },
+          "extensionVersion": {
+            "value": "[parameters('extensionVersion')]"
+          },
+          "instanceMemoryMB": {
+            "value": "[parameters('functionAppInstanceMemoryMB')]"
+          },
+          "maximumInstanceCount": {
+            "value": "[parameters('functionAppMaximumInstanceCount')]"
+          },
+          "managedIdentityName": {
+            "value": "[reference('managedIdentity').outputs.name.value]"
+          },
+          "hostingPlanName": {
+            "value": "[reference('serverFarm').outputs.name.value]"
+          },
+          "applicationInsightsName": {
+            "value": "[reference('applicationInsights').outputs.name.value]"
+          },
+          "storageAccountName": {
+            "value": "[reference('storageAccount').outputs.name.value]"
+          },
+          "openAiName": {
+            "value": "[reference('openAi').outputs.name.value]"
+          },
+          "chatModelDeploymentName": {
+            "value": "[parameters('chatModelDeploymentName')]"
+          },
+          "accountName": {
+            "value": "[reference('cosmosDb').outputs.accountName.value]"
+          },
+          "databaseName": {
+            "value": "[reference('cosmosDb').outputs.databaseName.value]"
+          },
+          "containerName": {
+            "value": "[reference('cosmosDb').outputs.containerName.value]"
+          },
+          "virtualNetworkName": {
+            "value": "[reference('network').outputs.name.value]"
+          },
+          "subnetName": {
+            "value": "[parameters('functionAppSubnetName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.1.11899",
+              "templateHash": "18123369657308983333"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies a globally unique name the Azure Functions App."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specifies the location."
+              }
+            },
+            "kind": {
+              "type": "string",
+              "defaultValue": "functionapp,linux",
+              "allowedValues": [
+                "app",
+                "app,linux",
+                "app,linux,container",
+                "hyperV",
+                "app,container,windows",
+                "app,linux,kubernetes",
+                "app,linux,container,kubernetes",
+                "functionapp",
+                "functionapp,linux",
+                "functionapp,linux,container,kubernetes",
+                "functionapp,linux,kubernetes"
+              ],
+              "metadata": {
+                "description": "Specifies the kind of the hosting plan."
+              }
+            },
+            "runtimeName": {
+              "type": "string",
+              "allowedValues": [
+                "dotnet",
+                "dotnet-isolated",
+                "python",
+                "java",
+                "node",
+                "powerShell",
+                "custom"
+              ],
+              "metadata": {
+                "description": "Specifies the language runtime used by the Azure Functions App."
+              }
+            },
+            "runtimeVersion": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the target language version used by the Azure Functions App."
+              }
+            },
+            "minTlsVersion": {
+              "type": "string",
+              "defaultValue": "1.2",
+              "allowedValues": [
+                "1.0",
+                "1.1",
+                "1.2",
+                "1.3"
+              ],
+              "metadata": {
+                "description": "Specifies the minimum TLS version for the Azure Functions App."
+              }
+            },
+            "publicNetworkAccess": {
+              "type": "string",
+              "defaultValue": "Enabled",
+              "allowedValues": [
+                "Enabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "Specifies whether the public network access is enabled or disabled"
+              }
+            },
+            "alwaysOn": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether Always On is enabled for the Azure Functions App."
+              }
+            },
+            "httpsOnly": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether HTTPS is enforced for the Azure Functions App."
+              }
+            },
+            "maximumInstanceCount": {
+              "type": "int",
+              "defaultValue": 100,
+              "minValue": 40,
+              "maxValue": 1000,
+              "metadata": {
+                "description": "Specifies the maximum scale-out instance count limit for the app."
+              }
+            },
+            "instanceMemoryMB": {
+              "type": "int",
+              "defaultValue": 2048,
+              "allowedValues": [
+                2048,
+                4096
+              ],
+              "metadata": {
+                "description": "Specifies the memory size of instances used by the app."
+              }
+            },
+            "managedIdentityName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Functions App user-defined managed identity."
+              }
+            },
+            "hostingPlanName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the hosting plan."
+              }
+            },
+            "allowedCorsOrigins": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "defaultValue": [],
+              "metadata": {
+                "description": "Specifies allowed origins for client-side CORS requests on the site."
+              }
+            },
+            "vnetRouteAllEnabled": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether all traffic is routed through the virtual network."
+              }
+            },
+            "vnetImagePullEnabled": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether image pull is enabled through the virtual network."
+              }
+            },
+            "vnetContentShareEnabled": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether content share is enabled through the virtual network."
+              }
+            },
+            "vnetBackupRestoreEnabled": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specifies whether backup and restore are enabled through the virtual network."
+              }
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name for the Azure Storage Account resource."
+              }
+            },
+            "openAiName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure OpenAI resource."
+              }
+            },
+            "chatModelDeploymentName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure OpenAI chat model deployment."
+              }
+            },
+            "accountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB account."
+              }
+            },
+            "databaseName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB database."
+              }
+            },
+            "containerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Cosmos DB container."
+              }
+            },
+            "applicationInsightsName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the Azure Application Insights."
+              }
+            },
+            "virtualNetworkName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the virtual network."
+              }
+            },
+            "subnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the subnet used by Azure Functions for the regional virtual network integration."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Specifies the resource tags."
+              }
+            },
+            "extensionVersion": {
+              "type": "string",
+              "defaultValue": "~4",
+              "metadata": {
+                "description": "Specifies Azurre Functions extension verson."
+              }
+            }
+          },
+          "variables": {
+            "deploymentStorageContainerName": "packages"
+          },
+          "resources": {
+            "functionApp::configAppSettings": {
+              "type": "Microsoft.Web/sites/config",
+              "apiVersion": "2024-04-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'appsettings')]",
+              "properties": "[if(equals(reference('hostingPlan', '2024-04-01', 'full').sku.tier, 'FlexConsumption'), createObject('AzureWebJobsStorage__accountName', parameters('storageAccountName'), 'STORAGE_ACCOUNT__blobServiceUri', reference('storageAccount').primaryEndpoints.blob, 'STORAGE_ACCOUNT__queueServiceUri', reference('storageAccount').primaryEndpoints.queue, 'STORAGE_ACCOUNT__tableServiceUri', reference('storageAccount').primaryEndpoints.table, 'AZURE_OPENAI_ENDPOINT', reference('openAi').endpoint, 'AZURE_CLIENT_ID', reference('managedIdentity').clientId, 'CHAT_MODEL_DEPLOYMENT_NAME', parameters('chatModelDeploymentName'), 'COSMOS_DB_CONNECTION__accountEndpoint', reference('account').documentEndpoint, 'COSMOS_DB_CONNECTION__credential', 'managedidentity', 'COSMOS_DB_CONNECTION__clientId', reference('managedIdentity').clientId, 'COSMOS_DB_DATABASE', parameters('databaseName'), 'COSMOS_DB_CONTAINER', parameters('containerName'), 'APPLICATIONINSIGHTS_CONNECTION_STRING', reference('applicationInsights').ConnectionString, 'APPLICATIONINSIGHTS_AUTHENTICATION_STRING', format('ClientId={0};Authorization=AAD', reference('managedIdentity').clientId), 'FUNCTIONS_EXTENSION_VERSION', parameters('extensionVersion')), createObject('AzureWebJobsStorage__accountName', parameters('storageAccountName'), 'STORAGE_ACCOUNT__blobServiceUri', reference('storageAccount').primaryEndpoints.blob, 'STORAGE_ACCOUNT__queueServiceUri', reference('storageAccount').primaryEndpoints.queue, 'STORAGE_ACCOUNT__tableServiceUri', reference('storageAccount').primaryEndpoints.table, 'AZURE_OPENAI_ENDPOINT', reference('openAi').endpoint, 'AZURE_CLIENT_ID', reference('managedIdentity').clientId, 'CHAT_MODEL_DEPLOYMENT_NAME', parameters('chatModelDeploymentName'), 'COSMOS_DB_CONNECTION__accountEndpoint', reference('account').documentEndpoint, 'COSMOS_DB_CONNECTION__credential', 'managedidentity', 'COSMOS_DB_CONNECTION__clientId', reference('managedIdentity').clientId, 'COSMOS_DB_DATABASE', parameters('databaseName'), 'COSMOS_DB_CONTAINER', parameters('containerName'), 'APPLICATIONINSIGHTS_CONNECTION_STRING', reference('applicationInsights').ConnectionString, 'APPLICATIONINSIGHTS_AUTHENTICATION_STRING', format('ClientId={0};Authorization=AAD', reference('managedIdentity').clientId), 'FUNCTIONS_EXTENSION_VERSION', parameters('extensionVersion'), 'FUNCTIONS_WORKER_RUNTIME', parameters('runtimeName'), 'WEBSITE_MAX_DYNAMIC_APPLICATION_SCALE_OUT', string(parameters('maximumInstanceCount'))))]",
+              "dependsOn": [
+                "account",
+                "applicationInsights",
+                "functionApp",
+                "hostingPlan",
+                "managedIdentity",
+                "openAi",
+                "storageAccount"
+              ]
+            },
+            "virtualNetwork": {
+              "existing": true,
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('virtualNetworkName')]"
+            },
+            "subnet": {
+              "existing": true,
+              "type": "Microsoft.Network/virtualNetworks/subnets",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('virtualNetworkName'), parameters('subnetName'))]"
+            },
+            "hostingPlan": {
+              "existing": true,
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2024-04-01",
+              "name": "[parameters('hostingPlanName')]"
+            },
+            "storageAccount": {
+              "existing": true,
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('storageAccountName')]"
+            },
+            "openAi": {
+              "existing": true,
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2024-10-01",
+              "name": "[parameters('openAiName')]"
+            },
+            "account": {
+              "existing": true,
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[toLower(parameters('accountName'))]"
+            },
+            "applicationInsights": {
+              "existing": true,
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('applicationInsightsName')]"
+            },
+            "managedIdentity": {
+              "existing": true,
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[parameters('managedIdentityName')]"
+            },
+            "functionApp": {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2024-04-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "kind": "[parameters('kind')]",
+              "tags": "[parameters('tags')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName')))]": {}
+                }
+              },
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+                "virtualNetworkSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
+                "vnetRouteAllEnabled": "[parameters('vnetRouteAllEnabled')]",
+                "vnetImagePullEnabled": "[parameters('vnetImagePullEnabled')]",
+                "vnetContentShareEnabled": "[parameters('vnetContentShareEnabled')]",
+                "vnetBackupRestoreEnabled": "[parameters('vnetBackupRestoreEnabled')]",
+                "httpsOnly": "[parameters('httpsOnly')]",
+                "siteConfig": {
+                  "minTlsVersion": "[parameters('minTlsVersion')]",
+                  "alwaysOn": "[parameters('alwaysOn')]",
+                  "linuxFxVersion": "[toUpper(format('{0}|{1}', parameters('runtimeName'), parameters('runtimeVersion')))]",
+                  "cors": {
+                    "allowedOrigins": "[union(createArray('https://portal.azure.com', 'https://ms.portal.azure.com'), parameters('allowedCorsOrigins'))]"
+                  },
+                  "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
+                },
+                "functionAppConfig": "[if(equals(reference('hostingPlan', '2024-04-01', 'full').sku.tier, 'FlexConsumption'), createObject('deployment', createObject('storage', createObject('type', 'blobContainer', 'value', format('{0}{1}', reference('storageAccount').primaryEndpoints.blob, variables('deploymentStorageContainerName')), 'authentication', createObject('type', 'managedIdentity', 'userAssignedIdentityResourceId', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))))), 'scaleAndConcurrency', createObject('maximumInstanceCount', parameters('maximumInstanceCount'), 'instanceMemoryMB', parameters('instanceMemoryMB')), 'runtime', createObject('name', parameters('runtimeName'), 'version', parameters('runtimeVersion'))), null())]"
+              },
+              "dependsOn": [
+                "hostingPlan",
+                "storageAccount"
+              ]
+            }
+          },
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "defaultHostName": {
+              "type": "string",
+              "value": "[reference('functionApp').defaultHostName]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "applicationInsights",
+        "cosmosDb",
+        "managedIdentity",
+        "network",
+        "openAi",
+        "serverFarm",
+        "storageAccount"
+      ]
+    }
+  },
+  "outputs": {
+    "deploymentInfo": {
+      "type": "object",
+      "value": {
+        "subscriptionId": "[subscription().subscriptionId]",
+        "resourceGroupName": "[resourceGroup().name]",
+        "location": "[parameters('location')]",
+        "storageAccountName": "[reference('storageAccount').outputs.name.value]"
+      }
+    }
+  }
+}
