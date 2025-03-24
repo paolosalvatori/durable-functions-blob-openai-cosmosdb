@@ -80,11 +80,11 @@ param kind string = 'elastic'
 @description('Specifies whether the hosting plan is zone redundant.')
 param zoneRedundant bool = true
 
-@description('Specifies the resource id of the Log Analytics workspace.')
-param workspaceId string
-
 @description('Specifies whether the hosting plan is reserved.')
 param isReserved bool
+
+@description('Specifies the resource id of the Log Analytics workspace.')
+param workspaceId string
 
 @description('Specifies the resource tags.')
 param tags object
@@ -139,7 +139,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   }
 }
 
-resource blobServiceDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if(!empty(workspaceId)) {
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if(!empty(workspaceId)) {
   name: diagnosticSettingsName
   scope: hostingPlan
   properties: {

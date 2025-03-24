@@ -287,6 +287,12 @@ param natGatewayIdleTimeoutMins int = 30
 @description('Specifies the name of the private endpoint to the blob storage account.')
 param blobStorageAccountPrivateEndpointName string = ''
 
+@description('Specifies the name of the private endpoint to the queue storage account.')
+param queueStorageAccountPrivateEndpointName string = ''
+
+@description('Specifies the name of the private endpoint to the table storage account.')
+param tableStorageAccountPrivateEndpointName string = ''
+
 @description('Specifies the name of the private endpoint to the file storage account.')
 param fileStorageAccountPrivateEndpointName string = ''
 
@@ -506,6 +512,12 @@ module privateEndpoints './modules/privateEndpoints.bicep' = {
     blobStorageAccountPrivateEndpointName: empty(blobStorageAccountPrivateEndpointName)
       ? toLower('${prefix}-blob-storage-pe-${suffix}')
       : blobStorageAccountPrivateEndpointName
+    queueStorageAccountPrivateEndpointName: empty(queueStorageAccountPrivateEndpointName)
+      ? toLower('${prefix}-queue-storage-pe-${suffix}')
+      : queueStorageAccountPrivateEndpointName
+    tableStorageAccountPrivateEndpointName: empty(tableStorageAccountPrivateEndpointName)
+      ? toLower('${prefix}-table-storage-pe-${suffix}')
+      : tableStorageAccountPrivateEndpointName
     fileStorageAccountPrivateEndpointName: empty(fileStorageAccountPrivateEndpointName)
       ? toLower('${prefix}-file-storage-pe-${suffix}')
       : fileStorageAccountPrivateEndpointName
@@ -563,6 +575,7 @@ module functionApp './modules/functionApp.bicep' = {
   params: {
     // properties
     name: empty(functionAppName) ? toLower('${prefix}-function-app-${suffix}') : functionAppName
+    location: location
     kind: functionAppKind
     runtimeName: functionAppRuntimeName
     runtimeVersion: functionAppRuntimeVersion
@@ -582,7 +595,7 @@ module functionApp './modules/functionApp.bicep' = {
     containerName: cosmosDb.outputs.containerName
     virtualNetworkName: network.outputs.name
     subnetName: functionAppSubnetName
-    location: location
+    workspaceId: workspace.outputs.id
     tags: tags
   }
 }
