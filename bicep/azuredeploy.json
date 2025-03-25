@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.1.11899",
-      "templateHash": "7650159816052050767"
+      "templateHash": "15380418508389906495"
     }
   },
   "parameters": {
@@ -521,6 +521,20 @@
       "defaultValue": "",
       "metadata": {
         "description": "Specifies the name of the private endpoint to the blob storage account."
+      }
+    },
+    "queueStorageAccountPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the private endpoint to the queue storage account."
+      }
+    },
+    "tableStorageAccountPrivateEndpointName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specifies the name of the private endpoint to the table storage account."
       }
     },
     "fileStorageAccountPrivateEndpointName": {
@@ -1739,7 +1753,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.1.11899",
-              "templateHash": "17930322596323204069"
+              "templateHash": "9245244030218052941"
             }
           },
           "parameters": {
@@ -1862,6 +1876,30 @@
                     "days": 0
                   }
                 }
+              },
+              {
+                "name": "publicIpLogs",
+                "count": "[length(variables('publicIpLogCategories'))]",
+                "input": {
+                  "category": "[variables('publicIpLogCategories')[copyIndex('publicIpLogs')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              },
+              {
+                "name": "publicIpMetrics",
+                "count": "[length(variables('publicIpMetricCategories'))]",
+                "input": {
+                  "category": "[variables('publicIpMetricCategories')[copyIndex('publicIpMetrics')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
               }
             ],
             "diagnosticSettingsName": "diagnosticSettings",
@@ -1869,6 +1907,14 @@
               "VMProtectionAlerts"
             ],
             "vnetMetricCategories": [
+              "AllMetrics"
+            ],
+            "publicIpLogCategories": [
+              "DDoSProtectionNotifications",
+              "DDoSMitigationFlowLogs",
+              "DDoSMitigationReports"
+            ],
+            "publicIpMetricCategories": [
               "AllMetrics"
             ]
           },
@@ -1973,6 +2019,24 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "publicIpDiagnosticSettings",
+                "count": "[length(range(0, parameters('natGatewayPublicIps')))]"
+              },
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Network/publicIPAddresses/{0}', if(equals(parameters('natGatewayPublicIps'), 1), format('{0}-public-ip', parameters('natGatewayName')), format('{0}-public-ip-{1}', parameters('natGatewayName'), add(range(0, parameters('natGatewayPublicIps'))[range(0, parameters('natGatewayPublicIps'))[copyIndex()]], 1))))]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('publicIpLogs')]",
+                "metrics": "[variables('publicIpMetrics')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', if(equals(parameters('natGatewayPublicIps'), 1), format('{0}-public-ip', parameters('natGatewayName')), format('{0}-public-ip-{1}', parameters('natGatewayName'), add(range(0, parameters('natGatewayPublicIps'))[range(0, parameters('natGatewayPublicIps'))[copyIndex()]], 1))))]"
               ]
             }
           ],
@@ -2639,6 +2703,8 @@
             "value": "[reference('network').outputs.peSubnetId.value]"
           },
           "blobStorageAccountPrivateEndpointName": "[if(empty(parameters('blobStorageAccountPrivateEndpointName')), createObject('value', toLower(format('{0}-blob-storage-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('blobStorageAccountPrivateEndpointName')))]",
+          "queueStorageAccountPrivateEndpointName": "[if(empty(parameters('queueStorageAccountPrivateEndpointName')), createObject('value', toLower(format('{0}-queue-storage-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('queueStorageAccountPrivateEndpointName')))]",
+          "tableStorageAccountPrivateEndpointName": "[if(empty(parameters('tableStorageAccountPrivateEndpointName')), createObject('value', toLower(format('{0}-table-storage-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('tableStorageAccountPrivateEndpointName')))]",
           "fileStorageAccountPrivateEndpointName": "[if(empty(parameters('fileStorageAccountPrivateEndpointName')), createObject('value', toLower(format('{0}-file-storage-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('fileStorageAccountPrivateEndpointName')))]",
           "keyVaultPrivateEndpointName": "[if(empty(parameters('keyVaultPrivateEndpointName')), createObject('value', toLower(format('{0}-key-vault-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('keyVaultPrivateEndpointName')))]",
           "openAiPrivateEndpointName": "[if(empty(parameters('openAiPrivateEndpointName')), createObject('value', toLower(format('{0}-open-ai-pe-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('openAiPrivateEndpointName')))]",
@@ -2670,7 +2736,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.1.11899",
-              "templateHash": "1028614780088284147"
+              "templateHash": "544744900988480983"
             }
           },
           "functions": [
@@ -2727,6 +2793,18 @@
               "type": "string",
               "metadata": {
                 "description": "Specifies the name of the private endpoint to the blob storage account."
+              }
+            },
+            "queueStorageAccountPrivateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the private endpoint to the queue storage account."
+              }
+            },
+            "tableStorageAccountPrivateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the name of the private endpoint to the table storage account."
               }
             },
             "fileStorageAccountPrivateEndpointName": {
@@ -2808,6 +2886,20 @@
               "location": "global",
               "tags": "[parameters('tags')]"
             },
+            "queuePrivateDnsZone": {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.queue.{0}', environment().suffixes.storage)]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            "tablePrivateDnsZone": {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.table.{0}', environment().suffixes.storage)]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
             "filePrivateDnsZone": {
               "type": "Microsoft.Network/privateDnsZones",
               "apiVersion": "2024-06-01",
@@ -2849,6 +2941,36 @@
               },
               "dependsOn": [
                 "blobPrivateDnsZone"
+              ]
+            },
+            "queuePrivateDnsZoneVirtualNetworkLink": {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.queue.{0}', environment().suffixes.storage), format('link_to_{0}', toLower(variables('virtualNetworkName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
+              },
+              "dependsOn": [
+                "queuePrivateDnsZone"
+              ]
+            },
+            "tablePrivateDnsZoneVirtualNetworkLink": {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.table.{0}', environment().suffixes.storage), format('link_to_{0}', toLower(variables('virtualNetworkName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
+              },
+              "dependsOn": [
+                "tablePrivateDnsZone"
               ]
             },
             "filePrivateDnsZoneVirtualNetworkLink": {
@@ -2951,6 +3073,90 @@
               "dependsOn": [
                 "blobPrivateDnsZone",
                 "blobStorageAccountPrivateEndpoint"
+              ]
+            },
+            "queueStorageAccountPrivateEndpoint": {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('queueStorageAccountPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('queueStorageAccountPrivateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('storageAccountId')]",
+                      "groupIds": [
+                        "queue"
+                      ]
+                    }
+                  }
+                ],
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            },
+            "queueStorageAccountPrivateDnsZoneGroupName": {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('queueStorageAccountPrivateEndpointName'), 'PrivateDnsZoneGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "dnsConfig",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.queue.{0}', environment().suffixes.storage))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "queuePrivateDnsZone",
+                "queueStorageAccountPrivateEndpoint"
+              ]
+            },
+            "tableStorageAccountPrivateEndpoint": {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2024-05-01",
+              "name": "[parameters('tableStorageAccountPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('tableStorageAccountPrivateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('storageAccountId')]",
+                      "groupIds": [
+                        "table"
+                      ]
+                    }
+                  }
+                ],
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            },
+            "tableStorageAccountPrivateDnsZoneGroupName": {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2024-05-01",
+              "name": "[format('{0}/{1}', parameters('tableStorageAccountPrivateEndpointName'), 'PrivateDnsZoneGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "dnsConfig",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.table.{0}', environment().suffixes.storage))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "tablePrivateDnsZone",
+                "tableStorageAccountPrivateEndpoint"
               ]
             },
             "fileStorageAccountPrivateEndpoint": {
@@ -3175,7 +3381,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.1.11899",
-              "templateHash": "17342338262613446913"
+              "templateHash": "5774595544133895057"
             }
           },
           "parameters": {
@@ -3279,16 +3485,16 @@
                 "description": "Specifies whether the hosting plan is zone redundant."
               }
             },
-            "workspaceId": {
-              "type": "string",
-              "metadata": {
-                "description": "Specifies the resource id of the Log Analytics workspace."
-              }
-            },
             "isReserved": {
               "type": "bool",
               "metadata": {
                 "description": "Specifies whether the hosting plan is reserved."
+              }
+            },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Log Analytics workspace."
               }
             },
             "tags": {
@@ -3619,6 +3825,9 @@
         "mode": "Incremental",
         "parameters": {
           "name": "[if(empty(parameters('functionAppName')), createObject('value', toLower(format('{0}-function-app-{1}', parameters('prefix'), parameters('suffix')))), createObject('value', parameters('functionAppName')))]",
+          "location": {
+            "value": "[parameters('location')]"
+          },
           "kind": {
             "value": "[parameters('functionAppKind')]"
           },
@@ -3676,8 +3885,8 @@
           "subnetName": {
             "value": "[parameters('functionAppSubnetName')]"
           },
-          "location": {
-            "value": "[parameters('location')]"
+          "workspaceId": {
+            "value": "[reference('workspace').outputs.id.value]"
           },
           "tags": {
             "value": "[parameters('tags')]"
@@ -3691,7 +3900,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.1.11899",
-              "templateHash": "18123369657308983333"
+              "templateHash": "6894447634855006887"
             }
           },
           "parameters": {
@@ -3911,6 +4120,12 @@
                 "description": "Specifies the name of the subnet used by Azure Functions for the regional virtual network integration."
               }
             },
+            "workspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specifies the resource id of the Log Analytics workspace."
+              }
+            },
             "tags": {
               "type": "object",
               "metadata": {
@@ -3926,7 +4141,41 @@
             }
           },
           "variables": {
-            "deploymentStorageContainerName": "packages"
+            "copy": [
+              {
+                "name": "logs",
+                "count": "[length(variables('logCategories'))]",
+                "input": {
+                  "category": "[variables('logCategories')[copyIndex('logs')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              },
+              {
+                "name": "metrics",
+                "count": "[length(variables('metricCategories'))]",
+                "input": {
+                  "category": "[variables('metricCategories')[copyIndex('metrics')]]",
+                  "enabled": true,
+                  "retentionPolicy": {
+                    "enabled": true,
+                    "days": 0
+                  }
+                }
+              }
+            ],
+            "deploymentStorageContainerName": "packages",
+            "diagnosticSettingsName": "diagnosticSettings",
+            "logCategories": [
+              "FunctionAppLogs",
+              "AppServiceAuthenticationLogs"
+            ],
+            "metricCategories": [
+              "AllMetrics"
+            ]
           },
           "resources": {
             "functionApp::configAppSettings": {
@@ -4028,6 +4277,21 @@
                 "hostingPlan",
                 "storageAccount"
               ]
+            },
+            "diagnosticSettings": {
+              "condition": "[not(empty(parameters('workspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Web/sites/{0}', parameters('name'))]",
+              "name": "[variables('diagnosticSettingsName')]",
+              "properties": {
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": "[variables('logs')]",
+                "metrics": "[variables('metrics')]"
+              },
+              "dependsOn": [
+                "functionApp"
+              ]
             }
           },
           "outputs": {
@@ -4053,7 +4317,8 @@
         "network",
         "openAi",
         "serverFarm",
-        "storageAccount"
+        "storageAccount",
+        "workspace"
       ]
     }
   },

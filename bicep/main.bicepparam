@@ -7,8 +7,8 @@ param keyVaultEnablePurgeProtection = false
 param storageAccountCreateContainers = true
 param storageAccountContainerNames = [
   'input'
-  'output'
 ]
+param storageInputContainerName = 'input'
 param cosmosDbIpRules = [] 
 param openAiLocation = '<YOUR_FAVORITE_AZURE_LOCATION>'
 param openAiDeployments = [
