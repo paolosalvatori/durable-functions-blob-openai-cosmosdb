@@ -91,6 +91,10 @@ param vnetContentShareEnabled bool = true
 @description('Specifies whether backup and restore are enabled through the virtual network.')
 param vnetBackupRestoreEnabled bool = true
 
+@description('Specifies the name of the input container.')
+@minLength(3)
+param storageInputContainerName string = 'input'
+
 @description('Specifies the name for the Azure Storage Account resource.')
 param storageAccountName string
 
@@ -256,6 +260,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       STORAGE_ACCOUNT__blobServiceUri: storageAccount.properties.primaryEndpoints.blob
       STORAGE_ACCOUNT__queueServiceUri: storageAccount.properties.primaryEndpoints.queue
       STORAGE_ACCOUNT__tableServiceUri: storageAccount.properties.primaryEndpoints.table
+      INPUT_STORAGE_CONTAINER_NAME: storageInputContainerName
       AZURE_OPENAI_ENDPOINT: openAi.properties.endpoint
       AZURE_CLIENT_ID: managedIdentity.properties.clientId
       CHAT_MODEL_DEPLOYMENT_NAME: chatModelDeploymentName
@@ -272,6 +277,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       STORAGE_ACCOUNT__blobServiceUri: storageAccount.properties.primaryEndpoints.blob
       STORAGE_ACCOUNT__queueServiceUri: storageAccount.properties.primaryEndpoints.queue
       STORAGE_ACCOUNT__tableServiceUri: storageAccount.properties.primaryEndpoints.table
+      INPUT_STORAGE_CONTAINER_NAME: storageInputContainerName
       AZURE_OPENAI_ENDPOINT: openAi.properties.endpoint
       AZURE_CLIENT_ID: managedIdentity.properties.clientId
       CHAT_MODEL_DEPLOYMENT_NAME: chatModelDeploymentName
@@ -285,6 +291,10 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       FUNCTIONS_EXTENSION_VERSION: extensionVersion
       FUNCTIONS_WORKER_RUNTIME: runtimeName
       WEBSITE_MAX_DYNAMIC_APPLICATION_SCALE_OUT: string(maximumInstanceCount)
+      WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+      WEBSITE_CONTENTSHARE: name
+      WEBSITE_RUN_FROM_PACKAGE: '1'
+      WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED: '1'
     }
   }
 }

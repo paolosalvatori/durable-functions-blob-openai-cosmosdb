@@ -84,6 +84,12 @@ param createContainers bool = false
 @description('Specifies an array of containers to create.')
 param containerNames array = []
 
+@description('Specifies whether to create file shares.')
+param createFileShares bool = false
+
+@description('Specifies an array of file shares to create.')
+param fileShareNames array = []
+
 //********************************************
 // Variables
 //********************************************
@@ -141,6 +147,29 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
         name: containerName
         properties: {
           publicAccess: 'None'
+        }
+      }
+    ]
+  }
+
+  resource queueService 'queueServices' = {
+    name: 'default'
+  }
+
+  resource tableService 'tableServices' = {
+    name: 'default'
+  }
+
+  resource fileService 'fileServices' = {
+    name: 'default'
+  
+    // Creating file shares with provided names if contition is true
+    resource shares 'shares' = [
+      for fileShareName in fileShareNames: if (createFileShares) {
+        name: fileShareName
+        properties: {
+          enabledProtocols: 'SMB'
+          shareQuota: 100 // Quota in GB (adjust as needed)
         }
       }
     ]
@@ -250,9 +279,40 @@ resource storageTableDataContributorUserRoleAssignment 'Microsoft.Authorization/
   }
 }
 
-resource blobServiceDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: diagnosticSettingsName
+resource blobServicesDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${diagnosticSettingsName}-blobService'
   scope: storageAccount::blobService
+  properties: {
+    workspaceId: workspaceId
+    logs: logs
+    metrics: metrics
+  }
+}
+
+resource queueServicesDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${diagnosticSettingsName}-queueService'
+  scope: storageAccount::queueService
+  properties: {
+    workspaceId: workspaceId
+    logs: logs
+    metrics: metrics
+  }
+}
+
+
+resource tableServicesDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${diagnosticSettingsName}-tableService'
+  scope: storageAccount::tableService
+  properties: {
+    workspaceId: workspaceId
+    logs: logs
+    metrics: metrics
+  }
+}
+
+resource fileServicesDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${diagnosticSettingsName}-fileService'
+  scope: storageAccount::fileService
   properties: {
     workspaceId: workspaceId
     logs: logs

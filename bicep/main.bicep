@@ -145,6 +145,10 @@ param functionAppMaximumInstanceCount int = 100
 @allowed([2048, 4096])
 param functionAppInstanceMemoryMB int = 2048
 
+@description('Specifies the name of the input container.')
+@minLength(3)
+param storageInputContainerName string = 'input'
+
 @description('Specifies Azurre Functions extension verson.')
 param extensionVersion string = '~4'
 
@@ -443,6 +447,8 @@ module storageAccount 'modules/storageAccount.bicep' = {
     workspaceId: workspace.outputs.id
     createContainers: storageAccountCreateContainers
     containerNames: storageAccountContainerNames
+    createFileShares: true
+    fileShareNames: [empty(functionAppName) ? toLower('${prefix}-function-app-${suffix}') : functionAppName]
     
     // role assignments
     userObjectId: userObjectId
@@ -587,6 +593,7 @@ module functionApp './modules/functionApp.bicep' = {
     managedIdentityName: managedIdentity.outputs.name
     hostingPlanName: serverFarm.outputs.name
     applicationInsightsName: applicationInsights.outputs.name
+    storageInputContainerName: storageInputContainerName
     storageAccountName: storageAccount.outputs.name
     openAiName: openAi.outputs.name
     chatModelDeploymentName: chatModelDeploymentName

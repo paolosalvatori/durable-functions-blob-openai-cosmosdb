@@ -18,7 +18,7 @@ public static class PromptProcessor
     /// <param name="context"></param>
     /// <returns>Task</returns>
     [Function(nameof(ProcessDocument))]
-    public static async Task ProcessDocument([BlobTrigger("input/{name}", Connection = "STORAGE_ACCOUNT")] Stream stream,
+    public static async Task ProcessDocument([BlobTrigger("%INPUT_STORAGE_CONTAINER_NAME%/{name}", Connection = "STORAGE_ACCOUNT")] Stream stream,
         string name,
         [DurableClient] DurableTaskClient client,
         FunctionContext context)
@@ -102,7 +102,8 @@ public static class PromptProcessor
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"[RunOrchestrator] An exception occurred while processing [{request}] request: [{ex.Message}].");
+                var innerException = !string.IsNullOrEmpty(ex?.InnerException?.Message) ? ex.InnerException.Message : string.Empty;
+                logger.LogError(ex, $"[RunOrchestrator] An exception occurred while processing [{request}] request: Exception [{ex?.Message}] Inner Exception [{innerException}].");
             }
         }
     }
