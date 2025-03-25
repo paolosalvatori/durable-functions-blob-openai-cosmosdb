@@ -39,5 +39,6 @@
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
     <Content Include="PromptProcessor.cs" />
     <Content Include="Properties\launchSettings.json" />
+    <Content Include="local.settings.json" />
   </ItemGroup>
 </Project>
