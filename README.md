@@ -1,4 +1,4 @@
-# Build an AI-Powered Workflow with Azure Durable Functions
+# Build an AI-Powered Workflow with Durable Functions
 
 This sample demonstrates how to build a data pipeline using [Azure Durable Functions](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview). The pipeline performs the following tasks:
 
