@@ -6,6 +6,7 @@
       "command": "dotnet",
       "args": [
         "clean",
+        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -20,6 +21,7 @@
       "command": "dotnet",
       "args": [
         "build",
+        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -41,6 +43,7 @@
         "clean",
         "--configuration",
         "Release",
+        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -57,6 +60,7 @@
         "publish",
         "--configuration",
         "Release",
+        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -73,7 +77,7 @@
       "options": {
         "cwd": "${workspaceFolder}/code/bin/Debug/net9.0"
       },
-      "command": "host start",
+      "command": "host start --dotnet-isolated-debug",
       "isBackground": true,
       "problemMatcher": "$func-dotnet-watch"
     }
