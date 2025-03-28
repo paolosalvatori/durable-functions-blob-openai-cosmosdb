@@ -1074,10 +1074,102 @@ Run the following command to deploy the resources:
 
 ### Step 4: Deploy the Function App to Azure
 
-You can find the code of the sample application in the [code](./code/) folder. Use [Visual Studio Code](https://code.visualstudio.com/) or [Visual Studio](https://visualstudio.microsoft.com/) to test the application locally and deploy it to Azure Function App created via Bicep.
+You can find the code of the sample application in the [code](./code/) folder. Use [Visual Studio Code](https://code.visualstudio.com/) or [Visual Studio](https://visualstudio.microsoft.com/) to test the application locally.
+
+You can use [Azurite](https://learn.microsoft.com/azure/storage/common/storage-use-azurite?tabs=visual-studio%2Cblob-storage) in place of an Azure storage account when testing the Azure Function App locally. Azurite is an open-source emulator provides a free local environment for testing your Azure Blob, Queue Storage, and Table Storage applications. If you install Azurite on Linux, Mac, or WSL on Windows, you can use the [start-azurite](./scripts/start-azurite.sh) Bash script to start the emulator:
+
+```bash
+#!/bin/bash
+
+# This script starts an Azure Storage emulator (Azurite) for local development and testing.
+azurite --silent --location /mnt/d/azurite --debug /mnt/d/azurite/debug.log --blobPort 10000 --queuePort 10001 --tablePort 10002
+```
+
+You can upload files to Azurite using the [Azure Storage Explorer](https://azure.microsoft.com/products/storage/storage-explorer), as shown in the following picture:
+
+![Azurite on Azure Storage Explorer](./images/azurite-on-azure-storage-explorer.png)
+
+You can also upload files to Azurite using the [upload-file](./scripts/upload-file.sh) Bash script:
+
+```bash
+#!/bin/bash
+
+# This script uploads a file to the local Azure Storage Emulator (Azurite) using the Azure CLI.
+
+# Variables
+accountName="devstoreaccount1"
+accountKey="Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+containerName="input"
+filePath="../documents/geography.json"
+blobEndpoint="http://127.0.0.1:10000/$accountName"
+
+# Generate a timestamp in the format YYYY-MM-DD-HH-MM-SS
+timestamp=$(date +"%Y-%m-%d-%H-%M-%S")
+
+# Extract the file name and extension
+fileName=$(basename -- "$filePath")
+fileBaseName="${fileName%.*}" # File name without extension
+fileExtension="${fileName##*.}" # File extension
+
+# Construct the blob name with the timestamp
+blobName="${fileBaseName}-${timestamp}.${fileExtension}"
+
+# Check whether the container already exists
+containerExists=$(az storage container exists \
+  --name $containerName \
+  --account-name $accountName \
+  --account-key $accountKey \
+  --blob-endpoint $blobEndpoint | jq .exists)
+
+if [ $containerExists == "true" ]; then
+  echo "Container '$containerName' already exists."
+else
+  echo "Container '$containerName' does not exist."
+
+  # Create the container if it doesn't exist
+  az storage container create \
+    --name $containerName \
+    --account-name $accountName \
+    --account-key $accountKey \
+    --blob-endpoint $blobEndpoint
+fi
+
+# Upload the file to the container
+az storage blob upload \
+  --container-name $containerName \
+  --file $filePath \
+  --name $blobName \
+  --account-name $accountName \
+  --account-key $accountKey \
+  --blob-endpoint $blobEndpoint
+
+echo "File uploaded successfully to Azurite with blob name: $blobName"
+```
 
 > [!NOTE]
 > When debugging the application locally, ensure that your user account has the necessary role assignments to access the Azure OpenAI Service, such as the [Cognitive Services User](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user) role.
+
+When you are done testing the application locally, you can publish it to Azure Function App created via Bicep using on of the following methods:
+
+- **Visual Studio**: When you publish your functions project to Azure, Visual Studio uses [zip deployment](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies#zip-deploy) to deploy the project files. When possible, you should also select **Run-From-Package** so that the project runs in the deployment (.zip) package. For more information, see [Run your functions from a package file in Azure](https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package). For more information, see [Publish to Azure](https://learn.microsoft.com/azure/azure-functions/functions-develop-vs?pivots=isolated#publish-to-azure).
+- **Visual Studio Code**: You can also deploy your project files from Visual Studio Code. When you publish from Visual Studio Code, you can take advantage of the [Zip deploy technology](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies#zip-deploy). For more information, see [Deploy project files](https://learn.microsoft.com/azure/azure-functions/functions-develop-vs-code?tabs=node-v4%2Cpython-v2%2Cisolated-process%2Cquick-create&pivots=programming-language-csharp#republish-project-files).
+- **Azure Functions Core Tools**: You can deploy a functions project to an existing Azure Function App resource in Azure using the [func azure functionapp publish](https://learn.microsoft.com/azure/azure-functions/functions-core-tools-reference?tabs=v2#func-azure-functionapp-publish), as shown in the following [deploy-app](./scripts/deploy-app.sh) Bash script:
+
+```bash
+#!/bin/bash
+
+# Define variables
+FUNCTION_APP_NAME="<YOUR_FUNCTION_APP_NAME>"
+RESOURCE_GROUP_NAME="<YOUR_RESOURCE_GROUP_NAME>"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$SCRIPT_DIR/../code/project"
+
+# Navigate to the project directory
+cd $PROJECT_DIR
+
+# Publish the Azure Function
+func azure functionapp publish $FUNCTION_APP_NAME --resource-group $RESOURCE_GROUP_NAME
+```
 
 For more information, see:
 

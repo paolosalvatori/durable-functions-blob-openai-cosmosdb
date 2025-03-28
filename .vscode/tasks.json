@@ -6,14 +6,13 @@
       "command": "dotnet",
       "args": [
         "clean",
-        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
       "type": "process",
       "problemMatcher": "$msCompile",
       "options": {
-        "cwd": "${workspaceFolder}/code"
+        "cwd": "${workspaceFolder}/code/project"
       }
     },
     {
@@ -21,7 +20,6 @@
       "command": "dotnet",
       "args": [
         "build",
-        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -33,7 +31,7 @@
       },
       "problemMatcher": "$msCompile",
       "options": {
-        "cwd": "${workspaceFolder}/code"
+        "cwd": "${workspaceFolder}/code/project"
       }
     },
     {
@@ -43,14 +41,13 @@
         "clean",
         "--configuration",
         "Release",
-        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
       "type": "process",
       "problemMatcher": "$msCompile",
       "options": {
-        "cwd": "${workspaceFolder}/code"
+        "cwd": "${workspaceFolder}/code/project"
       }
     },
     {
@@ -60,7 +57,6 @@
         "publish",
         "--configuration",
         "Release",
-        "${workspaceFolder}/code/FunctionApp.csproj", // Specify the project file
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -68,14 +64,14 @@
       "dependsOn": "clean release (functions)",
       "problemMatcher": "$msCompile",
       "options": {
-        "cwd": "${workspaceFolder}/code"
+        "cwd": "${workspaceFolder}/code/project"
       }
     },
     {
       "type": "func",
       "dependsOn": "build (functions)",
       "options": {
-        "cwd": "${workspaceFolder}/code/bin/Debug/net9.0"
+        "cwd": "${workspaceFolder}/code/project/bin/Debug/net9.0"
       },
       "command": "host start --dotnet-isolated-debug",
       "isBackground": true,
