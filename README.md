@@ -1082,7 +1082,13 @@ You can use [Azurite](https://learn.microsoft.com/azure/storage/common/storage-u
 #!/bin/bash
 
 # This script starts an Azure Storage emulator (Azurite) for local development and testing.
-azurite --silent --location /mnt/d/azurite --debug /mnt/d/azurite/debug.log --blobPort 10000 --queuePort 10001 --tablePort 10002
+azurite \
+  --silent \
+  --location /mnt/d/azurite \
+  --debug /mnt/d/azurite/debug.log \
+  --blobPort 10000 \
+  --queuePort 10001 \
+  --tablePort 10002
 ```
 
 You can upload files to Azurite using the [Azure Storage Explorer](https://azure.microsoft.com/products/storage/storage-explorer), as shown in the following picture:
@@ -1098,7 +1104,7 @@ You can also upload files to Azurite using the [upload-file](./scripts/upload-fi
 
 # Variables
 accountName="devstoreaccount1"
-accountKey="Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+accountKey="..."
 containerName="input"
 filePath="../documents/geography.json"
 blobEndpoint="http://127.0.0.1:10000/$accountName"
