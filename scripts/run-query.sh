@@ -17,7 +17,7 @@ databaseName="DocumentDb"
 collectionName="DocumentCollection"
 
 # Replace with your SQL query
-sqlQuery="SELECT c.request, c.response FROM c WHERE CONTAINS(LOWER(c.request), 'capital')" #Example query
+sqlQuery="SELECT c.request, c.response, c.createdUtc FROM c WHERE CONTAINS(LOWER(c.request), 'capital')" #Example query
 
 # Construct the URL to access the documents in the specified collection
 docsUrl="https://$accountName.documents.azure.com/dbs/$databaseName/colls/$collectionName/docs"
